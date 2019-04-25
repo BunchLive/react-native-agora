@@ -24,13 +24,14 @@ then
   unzip AgoraRtcEngineKit.framework.zip
   mv AgoraRtcEngineKit.framework/ ${cacheDir}
   echo "$0: AgoraRtcEngineKit.framework downloaded to '${dir1tmp}'."
-  rm AgoraRtcEngineKit.framework.zip
+  # rm AgoraRtcEngineKit.framework.zip
 fi
 
 dir1="ios/RCTAgora/libs/AgoraRtcEngineKit.framework"
 if [ ! -d "$dir1" ]
 then
-  cp -rf ${cacheDir}AgoraRtcEngineKit.framework/ ios/RCTAgora/libs/AgoraRtcEngineKit.framework/
+  mkdir ios/RCTAgora/libs/AgoraRtcEngineKit.framework/
+  cp -rf /Library/Caches/Agora2_4_0_1/AgoraRtcEngineKit.framework/ ios/RCTAgora/libs/AgoraRtcEngineKit.framework/
   echo "$0: AgoraRtcEngineKit.framework copied to '${dir1}'."
 fi
 
@@ -49,6 +50,7 @@ fi
 dir2="ios/RCTAgora/libs/AgoraRtcCryptoLoader.framework"
 if [ ! -d "$dir2" ]
 then
+  mkdir ios/RCTAgora/libs/AgoraRtcCryptoLoader.framework/
   cp -rf ${cacheDir}AgoraRtcCryptoLoader.framework/ ios/RCTAgora/libs/AgoraRtcCryptoLoader.framework/
   echo "$0: AgoraRtcCryptoLoader.framework copied to '${dir2}'."
 fi
