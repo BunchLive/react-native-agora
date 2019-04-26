@@ -14,6 +14,8 @@ then
 fi
 
 cacheDir='/Library/Caches/Agora2_4_0_1/'
+mkdir $cacheDir
+mkdir ios/RCTAgora/libs/
 
 dir1tmp="${cacheDir}AgoraRtcEngineKit.framework"
 if [ ! -d "$dir1tmp" ]
@@ -22,9 +24,10 @@ then
   curl -O https://storage.googleapis.com/z1-rumble-dev.appspot.com/Agora2_4_0_1/AgoraRtcEngineKit.framework.zip
   rm -rf AgoraRtcEngineKit.framework/
   unzip AgoraRtcEngineKit.framework.zip
+  cp -rf AgoraRtcEngineKit.framework ios/RCTAgora/libs/AgoraRtcEngineKit.framework/
   mv AgoraRtcEngineKit.framework/ ${cacheDir}
   echo "$0: AgoraRtcEngineKit.framework downloaded to '${dir1tmp}'."
-  # rm AgoraRtcEngineKit.framework.zip
+  rm AgoraRtcEngineKit.framework.zip
 fi
 
 dir1="ios/RCTAgora/libs/AgoraRtcEngineKit.framework"
