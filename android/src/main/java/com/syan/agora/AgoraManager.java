@@ -1,17 +1,14 @@
 package com.syan.agora;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceView;
 
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
@@ -33,6 +30,8 @@ public class AgoraManager {
     public RtcEngine mRtcEngine;
 
     private Context context;
+
+    private final CompositeRtcEngineEventHandler mRtcEventHandler = new CompositeRtcEngineEventHandler();
 
     private int mLocalUid = 0;
 
@@ -85,12 +84,34 @@ public class AgoraManager {
         return type;
     }
 
+    public void addRtcEngineEventHandler(IRtcEngineEventHandler handler) {
+        mRtcEventHandler.add(handler);
+    }
+
+    public void removeRtcEngineEventHandler(IRtcEngineEventHandler handler) {
+        mRtcEventHandler.remove(handler);
+    }
+
+    public boolean isInitialized() {
+        return mRtcEngine != null;
+    }
+
+    public boolean isLocalAudioStreamMuted() {
+        return "true".equals(mRtcEngine.getParameter("che.audio.mute_me", "false"));
+    }
+
+    public int init(Context context, ReadableMap options) {
+        return init(context, null, options);
+    }
+
     /**
      * initialize rtc engine
      */
-    public int init(Context context, IRtcEngineEventHandler mRtcEventHandler, ReadableMap options) {
+    public int init(Context context, IRtcEngineEventHandler rtcEventHandler, ReadableMap options) {
         //create rtcEngine instance and setup rtcEngine eventHandler
         try {
+            if (rtcEventHandler != null) mRtcEventHandler.add(rtcEventHandler);
+
             this.context = context;
             this.mRtcEngine = RtcEngine.create(context, options.getString("appid"), mRtcEventHandler);
             if (options.hasKey("secret") && null != options.getString("secret")) {
