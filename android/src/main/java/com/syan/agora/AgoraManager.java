@@ -8,8 +8,6 @@ import android.util.SparseArray;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableMap;
-import com.syan.agora.source.AgoraTextureCamera2;
-import com.syan.agora.source.CameraHelper;
 
 import java.util.ArrayList;
 import java.util.List;

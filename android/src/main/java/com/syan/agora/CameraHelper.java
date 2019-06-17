@@ -1,4 +1,4 @@
-package com.syan.agora.source;
+package com.syan.agora;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

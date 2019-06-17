@@ -1,4 +1,4 @@
-package com.syan.agora.source;
+package com.syan.agora;
 
 import android.content.Context;
 import android.view.WindowManager;
@@ -13,7 +13,7 @@ public class AgoraTextureCamera2 extends TextureSource {
     private final CameraHelper mCameraHelper;
 
     public AgoraTextureCamera2(Context context, final int width, final int height, CameraHelper cameraHelper) {
-        super((io.agora.rtc.gl.EglBase.Context)null, width, height);
+        super(null, width, height);
         this.mContext = context;
         this.mCameraHelper = cameraHelper;
     }
@@ -21,12 +21,10 @@ public class AgoraTextureCamera2 extends TextureSource {
     public void onTextureFrameAvailable(int oesTextureId, float[] transformMatrix, long timestampNs) {
         super.onTextureFrameAvailable(oesTextureId, transformMatrix, timestampNs);
         int rotation = this.getFrameOrientation();
-//        if (mCameraHelper.isFrontFacing()) {
-//            transformMatrix = RendererCommon.multiplyMatrices(transformMatrix, RendererCommon.horizontalFlipMatrix());
-//        }
 
         if (this.mConsumer != null && this.mConsumer.get() != null) {
-            ((IVideoFrameConsumer)this.mConsumer.get()).consumeTextureFrame(oesTextureId, PixelFormat.TEXTURE_OES.intValue(), this.mWidth, this.mHeight, rotation, System.currentTimeMillis(), transformMatrix);
+            this.mConsumer.get()
+                    .consumeTextureFrame(oesTextureId, PixelFormat.TEXTURE_OES.intValue(), this.mWidth, this.mHeight, rotation, System.currentTimeMillis(), transformMatrix);
         }
     }
 
@@ -75,12 +73,13 @@ public class AgoraTextureCamera2 extends TextureSource {
     }
 
     private int getFrameOrientation() {
-        int rotation = this.getDeviceOrientation();
-        if (!mCameraHelper.isFrontFacing()) { // back
-            rotation = 360 - rotation;
-        }
-
-        int cameraOrientation = mCameraHelper.cameraOrientation() + 90;
-        return 0; //(cameraOrientation + rotation) % 360;
+        return this.getDeviceOrientation();
+        // TODO figure out correct frame orientation
+//        if (!mCameraHelper.isFrontFacing()) { // back
+//            rotation = 360 - rotation;
+//        }
+//
+//        int cameraOrientation = mCameraHelper.cameraOrientation() + 90;
+//        return 0; //(cameraOrientation + rotation) % 360;
     }
 }

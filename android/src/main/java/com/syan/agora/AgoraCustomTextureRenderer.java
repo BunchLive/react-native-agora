@@ -1,4 +1,4 @@
-package com.syan.agora.renderer;
+package com.syan.agora;
 
 import android.content.Context;
 import android.graphics.SurfaceTexture;
