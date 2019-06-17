@@ -1,9 +1,9 @@
 package com.syan.agora;
 
 import android.content.Context;
+import android.view.Surface;
 import android.view.WindowManager;
 
-import io.agora.rtc.mediaio.IVideoFrameConsumer;
 import io.agora.rtc.mediaio.MediaIO.PixelFormat;
 import io.agora.rtc.mediaio.TextureSource;
 
@@ -53,33 +53,23 @@ public class AgoraTextureCamera2 extends TextureSource {
 
     private int getDeviceOrientation() {
         WindowManager wm = (WindowManager) this.mContext.getSystemService(Context.WINDOW_SERVICE);
-        short orientation;
         switch(wm.getDefaultDisplay().getRotation()) {
-            case 0:
-            default:
-                orientation = 0;
-                break;
-            case 1:
-                orientation = 90;
-                break;
-            case 2:
-                orientation = 180;
-                break;
-            case 3:
-                orientation = 270;
+            case Surface.ROTATION_0:
+            default: return 0;
+            case Surface.ROTATION_90: return 90;
+            case Surface.ROTATION_180: return 180;
+            case Surface.ROTATION_270: return 270;
         }
-
-        return orientation;
     }
 
     private int getFrameOrientation() {
-        return this.getDeviceOrientation();
-        // TODO figure out correct frame orientation
-//        if (!mCameraHelper.isFrontFacing()) { // back
-//            rotation = 360 - rotation;
-//        }
-//
-//        int cameraOrientation = mCameraHelper.cameraOrientation() + 90;
-//        return 0; //(cameraOrientation + rotation) % 360;
+        int cameraOrientation = mCameraHelper.cameraOrientation();
+        int deviceOrientation = this.getDeviceOrientation();
+        int rotation = deviceOrientation;
+        if (deviceOrientation == 90 || deviceOrientation == 270) {
+            rotation = (cameraOrientation == 90 || cameraOrientation == 270) ? (deviceOrientation + 180) % 360 : deviceOrientation;
+        }
+
+        return rotation;
     }
 }
