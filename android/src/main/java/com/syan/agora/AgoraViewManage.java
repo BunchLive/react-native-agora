@@ -1,10 +1,10 @@
 package com.syan.agora;
 
-import android.view.SurfaceView;
-
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import android.view.View;
 
 /**
  * Created by DB on 2017/6/23.
@@ -14,7 +14,7 @@ public class AgoraViewManage extends SimpleViewManager<AgoraVideoView> {
 
     public static final String REACT_CLASS = "RCTAgoraView";
 
-    public SurfaceView surfaceView;
+    public View surfaceView;
 
     @Override
     public String getName() {
@@ -39,7 +39,7 @@ public class AgoraViewManage extends SimpleViewManager<AgoraVideoView> {
 
     @ReactProp(name = "zOrderMediaOverlay")
     public void setZOrderMediaOverlay(final AgoraVideoView agoraVideoView, boolean zOrderMediaOverlay) {
-        surfaceView.setZOrderMediaOverlay(zOrderMediaOverlay);
+//        surfaceView.setZOrderMediaOverlay(zOrderMediaOverlay);
     }
 
     @ReactProp(name = "remoteUid")

@@ -1,30 +1,33 @@
 package com.syan.agora;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.util.Log;
+import android.util.Size;
 import android.util.SparseArray;
-import android.view.SurfaceView;
+import android.view.View;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.syan.agora.source.AgoraTextureCamera2;
+import com.syan.agora.source.CameraHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.mediaio.AgoraTextureView;
 import io.agora.rtc.video.BeautyOptions;
-import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
-import static io.agora.rtc.video.VideoEncoderConfiguration.*;
-
-
-/**
- * Created by Leon on 2017/4/9.
- */
+import static io.agora.rtc.mediaio.MediaIO.BufferType.BYTE_ARRAY;
+import static io.agora.rtc.mediaio.MediaIO.BufferType.TEXTURE;
+import static io.agora.rtc.mediaio.MediaIO.PixelFormat.I420;
+import static io.agora.rtc.mediaio.MediaIO.PixelFormat.TEXTURE_OES;
+import static io.agora.rtc.video.VideoEncoderConfiguration.FRAME_RATE;
+import static io.agora.rtc.video.VideoEncoderConfiguration.ORIENTATION_MODE;
 
 public class AgoraManager {
-
     public static AgoraManager sAgoraManager;
 
     public RtcEngine mRtcEngine;
@@ -36,10 +39,10 @@ public class AgoraManager {
     private int mLocalUid = 0;
 
     private AgoraManager() {
-        mSurfaceViews = new SparseArray<SurfaceView>();
+        mSurfaceViews = new SparseArray<>();
     }
 
-    private SparseArray<SurfaceView> mSurfaceViews;
+    private SparseArray<View> mSurfaceViews;
 
     public static AgoraManager getInstance() {
         if (sAgoraManager == null) {
@@ -113,6 +116,7 @@ public class AgoraManager {
             if (rtcEventHandler != null) mRtcEventHandler.add(rtcEventHandler);
 
             this.context = context;
+
             this.mRtcEngine = RtcEngine.create(context, options.getString("appid"), mRtcEventHandler);
             if (options.hasKey("secret") && null != options.getString("secret")) {
                 mRtcEngine.setEncryptionSecret(options.getString("secret"));
@@ -193,27 +197,6 @@ public class AgoraManager {
         }
     }
 
-    /**
-     * 设置本地视频，即前置摄像头预览
-     */
-    public int setupLocalVideo() {
-        //创建一个SurfaceView用作视频预览
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(context);
-        //将SurfaceView保存起来在SparseArray中，后续会将其加入界面。key为视频的用户id，这里是本地视频, 默认id是0
-
-        mSurfaceViews.put(mLocalUid, surfaceView);
-
-        //设置本地视频，渲染模式选择VideoCanvas.RENDER_MODE_HIDDEN，如果选其他模式会出现视频不会填充满整个SurfaceView的情况，
-        //具体渲染模式参考官方文档https://docs.agora.io/cn/user_guide/API/android_api.html#set-local-video-view-setuplocalvideo
-        return mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, mLocalUid));
-    }
-
-    public int setupRemoteVideo(final int uid) {
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(context);
-        mSurfaceViews.put(uid, surfaceView);
-        return mRtcEngine.setupRemoteVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, uid));
-    }
-
     public int setEnableSpeakerphone(boolean enabled) {
         return mRtcEngine.setEnableSpeakerphone(enabled);
     }
@@ -270,22 +253,74 @@ public class AgoraManager {
         mSurfaceViews.remove(uid);
     }
 
-    public List<SurfaceView> getSurfaceViews() {
-        List<SurfaceView> list = new ArrayList<SurfaceView>();
+    public List<View> getSurfaceViews() {
+        List<View> list = new ArrayList<>();
         for (int i = 0; i < mSurfaceViews.size(); i++) {
-            SurfaceView surfaceView = mSurfaceViews.valueAt(i);
+            View surfaceView = mSurfaceViews.valueAt(i);
             list.add(surfaceView);
         }
         return list;
     }
 
-    public SurfaceView getLocalSurfaceView() {
+    public View getLocalSurfaceView() {
         return mSurfaceViews.get(mLocalUid);
     }
 
-    public SurfaceView getSurfaceView(int uid) {
+    public View getSurfaceView(int uid) {
         return mSurfaceViews.get(uid);
     }
 
+    public int switchCamera() {
+        mCameraHelper.switchCamera();
+        return 0;
+    }
+
+    // -- TextureView support
+
+    private CameraHelper mCameraHelper;
+
+    public int setupLocalVideo() {
+        if (mCameraHelper == null) {
+            mCameraHelper = new CameraHelper(context, new CameraHelper.CameraHelperDelegate() {
+                @Override
+                public Size getTextureViewSize() {
+                    return new Size(480, 640);
+                }
+
+                @Override
+                public void setTextureViewTransform(final Matrix transform) {
+
+                }
+
+                @Override
+                public void onPreviewSizeChange(final Size size) {
+
+                }
+            });
+            mCameraHelper.setUseFrontCamera(true);
+        }
+
+        AgoraTextureCamera2 videoSource = new AgoraTextureCamera2(context, 480, 640, mCameraHelper);
+        AgoraTextureView renderer = new AgoraTextureView(context);
+        renderer.init(videoSource.getEglContext());
+        renderer.setBufferType(TEXTURE);
+        renderer.setPixelFormat(TEXTURE_OES);
+
+        mRtcEngine.setVideoSource(videoSource);
+        mRtcEngine.setLocalVideoRenderer(renderer);
+        mSurfaceViews.put(mLocalUid, renderer);
+        return 0;
+    }
+
+    public int setupRemoteVideo(final int uid) {
+        AgoraTextureView renderer = new AgoraTextureView(context);
+        renderer.init(null);
+        renderer.setBufferType(BYTE_ARRAY);
+        renderer.setPixelFormat(I420);
+
+        mRtcEngine.setRemoteVideoRenderer(uid, renderer);
+        mSurfaceViews.put(uid, renderer);
+        return 0;
+    }
 
 }

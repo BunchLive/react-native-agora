@@ -1288,7 +1288,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void switchCamera(Promise promise) {
         try {
-            int res = AgoraManager.getInstance().mRtcEngine.switchCamera();
+            int res = AgoraManager.getInstance().switchCamera();
             if (res != 0) throw new ReactNativeAgoraException("switchCamera Failed", res);
             WritableMap map = Arguments.createMap();
             map.putBoolean("success", true);
