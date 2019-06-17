@@ -101,6 +101,10 @@ public class AgoraManager {
         return "true".equals(mRtcEngine.getParameter("che.audio.mute_me", "false"));
     }
 
+    public boolean isUsingFrontCamera() {
+        return mCameraHelper.isFrontFacing();
+    }
+
     public int init(Context context, ReadableMap options) {
         return init(context, null, options);
     }
