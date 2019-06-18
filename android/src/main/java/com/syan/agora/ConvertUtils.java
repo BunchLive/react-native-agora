@@ -1,7 +1,5 @@
 package com.syan.agora;
 
-import android.support.annotation.Nullable;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -23,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConvertUtils {
-    public static Map<String, Object> readableMapToMap(final @Nullable ReadableMap readableMap) {
+    public static Map<String, Object> readableMapToMap(final ReadableMap readableMap) {
         if (readableMap == null) {
             return new HashMap<>();
         }
@@ -42,7 +40,7 @@ public class ConvertUtils {
         return result;
     }
 
-    public static Object toObject(@Nullable ReadableMap readableMap, String key) {
+    public static Object toObject(ReadableMap readableMap, String key) {
         if (readableMap == null) {
             return null;
         }
@@ -88,7 +86,7 @@ public class ConvertUtils {
      * @param readableArray The ReadableArray to be conveted.
      * @return An ArrayList containing the data that was in the ReadableArray.
      */
-    public static List<Object> readableArrayToList(final @Nullable ReadableArray readableArray) {
+    public static List<Object> readableArrayToList(final ReadableArray readableArray) {
         if (readableArray == null) {
             return null;
         }

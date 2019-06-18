@@ -1,7 +1,6 @@
 package com.syan.agora;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -2698,7 +2697,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     private void sendEvent(ReactContext reactContext,
                            String eventName,
-                           @Nullable WritableMap params) {
+                           WritableMap params) {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);

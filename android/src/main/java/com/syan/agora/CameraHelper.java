@@ -21,7 +21,6 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -169,7 +168,7 @@ public class CameraHelper {
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
 
         @Override
-        public void onOpened(@NonNull CameraDevice cameraDevice) {
+        public void onOpened(CameraDevice cameraDevice) {
             // This method is called when the camera is opened.  We start camera preview here.
             mCameraOpenCloseLock.release();
             mCameraDevice = cameraDevice;
@@ -177,14 +176,14 @@ public class CameraHelper {
         }
 
         @Override
-        public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+        public void onDisconnected(CameraDevice cameraDevice) {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
         }
 
         @Override
-        public void onError(@NonNull CameraDevice cameraDevice, int error) {
+        public void onError(CameraDevice cameraDevice, int error) {
             mCameraOpenCloseLock.release();
             cameraDevice.close();
             mCameraDevice = null;
@@ -309,16 +308,16 @@ public class CameraHelper {
         }
 
         @Override
-        public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull CaptureResult partialResult) {
+        public void onCaptureProgressed(CameraCaptureSession session,
+                CaptureRequest request,
+                CaptureResult partialResult) {
             process(partialResult);
         }
 
         @Override
-        public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull TotalCaptureResult result) {
+        public void onCaptureCompleted(CameraCaptureSession session,
+                CaptureRequest request,
+                TotalCaptureResult result) {
             process(result);
         }
 
@@ -577,7 +576,7 @@ public class CameraHelper {
                     new CameraCaptureSession.StateCallback() {
 
                         @Override
-                        public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                        public void onConfigured(CameraCaptureSession cameraCaptureSession) {
                             // The camera is already closed
                             if (null == mCameraDevice) {
                                 return;
@@ -603,7 +602,7 @@ public class CameraHelper {
 
                         @Override
                         public void onConfigureFailed(
-                                @NonNull CameraCaptureSession cameraCaptureSession) {
+                                CameraCaptureSession cameraCaptureSession) {
 //                            showToast("Failed");
                         }
                     }, null
@@ -714,9 +713,9 @@ public class CameraHelper {
                     = new CameraCaptureSession.CaptureCallback() {
 
                 @Override
-                public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                        @NonNull CaptureRequest request,
-                        @NonNull TotalCaptureResult result) {
+                public void onCaptureCompleted(CameraCaptureSession session,
+                        CaptureRequest request,
+                        TotalCaptureResult result) {
                     Log.d(TAG, "Image Saved: " + mFile.toString());
                     unlockFocus();
                 }
