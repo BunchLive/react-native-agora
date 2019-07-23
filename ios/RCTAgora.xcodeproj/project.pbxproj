@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		085CF7D72204A7B7002075D5 /* AgoraRtcCryptoLoader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 085CF7D52204A7B7002075D5 /* AgoraRtcCryptoLoader.framework */; };
 		085CF7D82204A7B7002075D5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 085CF7D62204A7B7002075D5 /* libcrypto.a */; };
+		08B28CF72211239F00E57CEB /* AgoraRtcEngineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08B28CF62211239F00E57CEB /* AgoraRtcEngineKit.framework */; };
 		23AF28211EEFECD800D771AB /* RCTAgora.m in Sources */ = {isa = PBXBuildFile; fileRef = 23AF28201EEFECD800D771AB /* RCTAgora.m */; };
 		23AF28221EEFECD800D771AB /* RCTAgora.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 23AF281F1EEFECD800D771AB /* RCTAgora.h */; };
 		23C20DD11F0A6ED80095F60C /* AgoraConst.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C20DCC1F0A6ED80095F60C /* AgoraConst.m */; };
 		23C20DD21F0A6ED80095F60C /* RCTAgoraVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C20DCE1F0A6ED80095F60C /* RCTAgoraVideoView.m */; };
 		23C20DD31F0A6ED80095F60C /* RCTAgoraViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 23C20DD01F0A6ED80095F60C /* RCTAgoraViewManager.m */; };
-		4F5D6C892272280B008C12F4 /* AgoraRtcEngineKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F5D6C882272280B008C12F4 /* AgoraRtcEngineKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +33,7 @@
 /* Begin PBXFileReference section */
 		085CF7D52204A7B7002075D5 /* AgoraRtcCryptoLoader.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AgoraRtcCryptoLoader.framework; sourceTree = "<group>"; };
 		085CF7D62204A7B7002075D5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
+		08B28CF62211239F00E57CEB /* AgoraRtcEngineKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AgoraRtcEngineKit.framework; path = ../samples/simpleDemo/ios/Pods/AgoraRtcEngine_iOS/AgoraRtcEngineKit.framework; sourceTree = "<group>"; };
 		23AF281C1EEFECD800D771AB /* libRCTAgora.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTAgora.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		23AF281F1EEFECD800D771AB /* RCTAgora.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTAgora.h; sourceTree = "<group>"; };
 		23AF28201EEFECD800D771AB /* RCTAgora.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTAgora.m; sourceTree = "<group>"; };
@@ -42,7 +43,6 @@
 		23C20DCE1F0A6ED80095F60C /* RCTAgoraVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAgoraVideoView.m; sourceTree = "<group>"; };
 		23C20DCF1F0A6ED80095F60C /* RCTAgoraViewManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTAgoraViewManager.h; sourceTree = "<group>"; };
 		23C20DD01F0A6ED80095F60C /* RCTAgoraViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTAgoraViewManager.m; sourceTree = "<group>"; };
-		4F5D6C882272280B008C12F4 /* AgoraRtcEngineKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AgoraRtcEngineKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F5D6C892272280B008C12F4 /* AgoraRtcEngineKit.framework in Frameworks */,
+				08B28CF72211239F00E57CEB /* AgoraRtcEngineKit.framework in Frameworks */,
 				085CF7D82204A7B7002075D5 /* libcrypto.a in Frameworks */,
 				085CF7D72204A7B7002075D5 /* AgoraRtcCryptoLoader.framework in Frameworks */,
 			);
@@ -62,11 +62,18 @@
 		085CF7D42204A787002075D5 /* libs */ = {
 			isa = PBXGroup;
 			children = (
-				4F5D6C882272280B008C12F4 /* AgoraRtcEngineKit.framework */,
 				085CF7D52204A7B7002075D5 /* AgoraRtcCryptoLoader.framework */,
 				085CF7D62204A7B7002075D5 /* libcrypto.a */,
 			);
 			path = libs;
+			sourceTree = "<group>";
+		};
+		08B28CF52211239F00E57CEB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				08B28CF62211239F00E57CEB /* AgoraRtcEngineKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		23AF28131EEFECD800D771AB = {
@@ -74,6 +81,7 @@
 			children = (
 				23AF281E1EEFECD800D771AB /* RCTAgora */,
 				23AF281D1EEFECD800D771AB /* Products */,
+				08B28CF52211239F00E57CEB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,7 +150,6 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 			);
 			mainGroup = 23AF28131EEFECD800D771AB;
@@ -285,22 +292,22 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/../../../ios/Pods/**",
 					"$(PROJECT_DIR)/RCTAgora/libs/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../react-native/React\"/**",
 					"\"$(SRCROOT)/../../react-native/Libraries\"/**",
+					"$(SRCROOT)/../../../ios/Pods/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../../../ios/Pods/**",
 					"$(PROJECT_DIR)/RCTAgora/libs/**",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"$(inherited)",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -313,22 +320,22 @@
 				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
+					"$(SRCROOT)/../../../ios/Pods/**",
 					"$(PROJECT_DIR)/RCTAgora/libs/**",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../react-native/React\"/**",
 					"\"$(SRCROOT)/../../react-native/Libraries\"/**",
+					"$(SRCROOT)/../../../ios/Pods/**",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../../../ios/Pods/**",
 					"$(PROJECT_DIR)/RCTAgora/libs/**",
 				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"$(inherited)",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
