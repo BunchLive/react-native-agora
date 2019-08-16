@@ -22,14 +22,13 @@ buildscript {
 def DEFAULT_COMPILE_SDK_VERSION = 27
 def DEFAULT_BUILD_TOOLS_VERSION = "27.0.3"
 def DEFAULT_TARGET_SDK_VERSION = 27
-def DEFAULT_ANDROID_SUPPORT_VERSION = "27.1.0"
 
 android {
     compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : DEFAULT_COMPILE_SDK_VERSION
     buildToolsVersion rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : DEFAULT_TARGET_SDK_VERSION
         versionCode 1
         versionName "1.0"
@@ -58,9 +57,6 @@ android {
 }
 
 dependencies {
-    def androidSupportVersion = rootProject.hasProperty("androidSupportVersion")  ? rootProject.androidSupportVersion : DEFAULT_ANDROID_SUPPORT_VERSION
-    // from internet
-    implementation "com.android.support:appcompat-v7:$androidSupportVersion"
     implementation "io.agora.rtc:full-sdk:2.8.2"
     // from node_modules
     implementation "com.facebook.react:react-native:+"
