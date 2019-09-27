@@ -1,7 +1,6 @@
 package com.syan.agora;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.view.SurfaceView;
 
 import com.facebook.react.bridge.Arguments;
@@ -1480,7 +1479,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void switchCamera(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.switchCamera();
+        Integer res = AgoraManager.getInstance().switchCamera();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2656,7 +2655,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     private void sendEvent(ReactContext reactContext,
                            String eventName,
-                           @Nullable WritableMap params) {
+                           WritableMap params) {
         StringBuffer agoraEvtName = new StringBuffer(AG_PREFIX);
         agoraEvtName.append(eventName);
         reactContext
