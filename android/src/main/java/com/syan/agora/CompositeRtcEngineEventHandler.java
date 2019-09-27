@@ -236,9 +236,9 @@ public class CompositeRtcEngineEventHandler extends IRtcEngineEventHandler {
     }
 
     @Override
-    public void onRemoteVideoStateChanged(final int uid, final int state) {
+    public void onRemoteVideoStateChanged(final int uid, final int state, final int reason, final int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
-            h.onRemoteVideoStateChanged(uid, state);
+            h.onRemoteVideoStateChanged(uid, state, reason, elapsed);
         }
     }
 
