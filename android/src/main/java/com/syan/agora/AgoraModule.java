@@ -2104,19 +2104,19 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     private static boolean recording = false;
 
     // TODO: need implementation
-    @ReactMethod
-    public void startAVRecording(final ReadableMap option, final Promise promise) {
-        String path = option.getString("path");
-        Integer uid = option.getInt("uid");
-        String format = option.getString("format");
-        if (true == recording) {
-            promise.reject("-1", "recording already started");
-        }
-        SurfaceView view = AgoraManager.getInstance().getSurfaceView(uid);
-        if (null == view) {
-            promise.reject("-1", "recording already started");
-        }
-    }
+    // @ReactMethod
+    // public void startAVRecording(final ReadableMap option, final Promise promise) {
+    //     String path = option.getString("path");
+    //     Integer uid = option.getInt("uid");
+    //     String format = option.getString("format");
+    //     if (true == recording) {
+    //         promise.reject("-1", "recording already started");
+    //     }
+    //     SurfaceView view = AgoraManager.getInstance().getSurfaceView(uid);
+    //     if (null == view) {
+    //         promise.reject("-1", "recording already started");
+    //     }
+    // }
 
     // TODO: need implementation
     @ReactMethod
