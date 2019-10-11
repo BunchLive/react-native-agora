@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import live.bunch.agora.AgoraModule;
+
 public class AgoraPackage implements ReactPackage {
 
     @Override

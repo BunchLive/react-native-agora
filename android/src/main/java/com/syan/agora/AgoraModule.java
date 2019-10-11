@@ -15,7 +15,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +30,8 @@ import io.agora.rtc.video.AgoraImage;
 import io.agora.rtc.video.BeautyOptions;
 import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+
+import live.bunch.agora.AgoraManager;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 

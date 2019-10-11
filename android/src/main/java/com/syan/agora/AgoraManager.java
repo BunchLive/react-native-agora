@@ -17,6 +17,9 @@ import io.agora.rtc.RtcEngine;
 import io.agora.rtc.mediaio.AgoraTextureView;
 import io.agora.rtc.video.BeautyOptions;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import live.bunch.agora.AgoraTextureCamera2;
+import live.bunch.agora.CameraHelper;
+import live.bunch.agora.CompositeRtcEngineEventHandler;
 
 import static io.agora.rtc.mediaio.MediaIO.BufferType.BYTE_ARRAY;
 import static io.agora.rtc.mediaio.MediaIO.BufferType.TEXTURE;
