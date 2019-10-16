@@ -319,50 +319,50 @@ public class AgoraManager {
 
      private CameraHelper mCameraHelper;
 
-//     public int setupLocalVideo() {
-//        if (mCameraHelper == null) {
-//            mCameraHelper = new CameraHelper(context, new CameraHelper.CameraHelperDelegate() {
-//                @Override
-//                public Size getTextureViewSize() {
-//                    return new Size(480, 640);
-//                }
-//
-//                 @Override
-//                public void setTextureViewTransform(final Matrix transform) {
-//
-//                 }
-//
-//                 @Override
-//                public void onPreviewSizeChange(final Size size) {
-//
-//                 }
-//            });
-//            mCameraHelper.setUseFrontCamera(true);
-//        }
-//
-//         AgoraTextureCamera2 videoSource = new AgoraTextureCamera2(context, 480, 640, mCameraHelper);
-//        AgoraTextureView renderer = new AgoraTextureView(context);
-//        renderer.init(videoSource.getEglContext());
-//        renderer.setBufferType(TEXTURE);
-//        renderer.setPixelFormat(TEXTURE_OES);
-//
-//         mRtcEngine.setVideoSource(videoSource);
-//        mRtcEngine.setLocalVideoRenderer(renderer);
-//        mSurfaceViews.put(mLocalUid, renderer);
-//        return 0;
-//    }
+     public int setupLocalVideo() {
+        if (mCameraHelper == null) {
+            mCameraHelper = new CameraHelper(context, new CameraHelper.CameraHelperDelegate() {
+                @Override
+                public Size getTextureViewSize() {
+                    return new Size(480, 640);
+                }
 
-    public int setupLocalVideo() {	
-        //创建一个SurfaceView用作视频预览	
-        SurfaceView surfaceView = RtcEngine.CreateRendererView(context);
-        //将SurfaceView保存起来在SparseArray中，后续会将其加入界面。key为视频的用户id，这里是本地视频, 默认id是0	
+                 @Override
+                public void setTextureViewTransform(final Matrix transform) {
 
-         mSurfaceViews.put(mLocalUid, surfaceView);	
+                 }
 
-         //设置本地视频，渲染模式选择VideoCanvas.RENDER_MODE_HIDDEN，如果选其他模式会出现视频不会填充满整个SurfaceView的情况，	
-        //具体渲染模式参考官方文档https://docs.agora.io/cn/user_guide/API/android_api.html#set-local-video-view-setuplocalvideo	
-        return mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, mLocalUid));	
+                 @Override
+                public void onPreviewSizeChange(final Size size) {
+
+                 }
+            });
+            mCameraHelper.setUseFrontCamera(true);
+        }
+
+         AgoraTextureCamera2 videoSource = new AgoraTextureCamera2(context, 480, 640, mCameraHelper);
+        AgoraTextureView renderer = new AgoraTextureView(context);
+        renderer.init(videoSource.getEglContext());
+        renderer.setBufferType(TEXTURE);
+        renderer.setPixelFormat(TEXTURE_OES);
+
+         mRtcEngine.setVideoSource(videoSource);
+        mRtcEngine.setLocalVideoRenderer(renderer);
+        mSurfaceViews.put(mLocalUid, renderer);
+        return 0;
     }
+
+//    public int setupLocalVideo() {
+//        //创建一个SurfaceView用作视频预览
+//        SurfaceView surfaceView = RtcEngine.CreateRendererView(context);
+//        //将SurfaceView保存起来在SparseArray中，后续会将其加入界面。key为视频的用户id，这里是本地视频, 默认id是0
+//
+//         mSurfaceViews.put(mLocalUid, surfaceView);
+//
+//         //设置本地视频，渲染模式选择VideoCanvas.RENDER_MODE_HIDDEN，如果选其他模式会出现视频不会填充满整个SurfaceView的情况，
+//        //具体渲染模式参考官方文档https://docs.agora.io/cn/user_guide/API/android_api.html#set-local-video-view-setuplocalvideo
+//        return mRtcEngine.setupLocalVideo(new VideoCanvas(surfaceView, VideoCanvas.RENDER_MODE_HIDDEN, mLocalUid));
+//    }
 
      public int setupRemoteVideo(final int uid) {
         AgoraTextureView renderer = new AgoraTextureView(context);
