@@ -1,5 +1,7 @@
 package com.syan.agora;
 
+import live.bunch.agora.AgoraManager;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
