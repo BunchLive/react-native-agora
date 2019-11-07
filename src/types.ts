@@ -1,6 +1,35 @@
 import { ViewProps } from 'react-native';
 
 /**
+ * ChannelMediaInfo
+ * @property channelName: string
+ * @property token: string
+ * @property uid: number
+ */
+export interface ChannelMediaInfo {
+  channelName: string
+  token?: string
+  uid?: number
+}
+/**
+ * ChannelMediaConfiguration
+ * @property src: {
+ *    @member channelName,
+ *    @member token,
+ *    @member uid,
+ * }
+ * @property channels: {@link Array<ChannelMediaInfo>}
+ */
+export interface ChannelMediaConfiguration {
+  src?: {
+    channelName: string
+    token?: string
+    uid?: number
+  }
+  channels: Array<ChannelMediaInfo>
+}
+
+/**
  * AgoraViewMode
  * @mode hidden Uniformly scale the video until it fills the visible boundaries (cropped). One dimension of the video may have clipped contents.
  * @mode FIT Uniformly scale the video until one of its dimension fits the boundary (zoomed to fit). Areas that are not filled due to the disparity in the aspect ratio are filled with black.
@@ -193,6 +222,7 @@ export interface VideoOption {
 
 export interface AudioRecordingOption {
   filepath: String,
+  sampleRate: number,
   quality: number
 }
 
@@ -247,11 +277,19 @@ export interface MixedAudioFrameOption {
 }
 
 export interface ImageOption {
-  url: String,
-  height: number,
-  width: number,
-  x: number,
-  y: number
+  visibleInPreview: boolean
+  positionInPortraitMode: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  }
+  positionInLandscapeMode: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  }
 }
 
 export interface VideoStreamOption {
@@ -332,4 +370,5 @@ export interface LastmileProbeConfig {
  */
 export interface CameraCapturerConfiguration {
   preference: number
+  cameraDirection: number
 }

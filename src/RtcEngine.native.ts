@@ -25,7 +25,8 @@ import {
     PositionOption,
     BeautyOption,
     LastmileProbeConfig,
-    CameraCapturerConfiguration
+    CameraCapturerConfiguration,
+    ChannelMediaConfiguration
 } from "./types";
 
 
@@ -42,6 +43,11 @@ const AgoraEventEmitter = new NativeEventEmitter(Agora);
 class RtcEngine {
 
     /**
+     * @ignore eventTypes
+     */
+    private static readonly _eventTypes: Set<string> = new Set<string>();
+
+    /**
      * @ignore AG_PREFIX
      */ 
     private static readonly AG_PREFIX: string = 'ag_rtc';
@@ -52,6 +58,7 @@ class RtcEngine {
      * This method creates and start event observer. You should call this method once.
      * @example `RtcEngine.init(option)`
      * @param options Defines the property of the client, see {@link Option} for details.
+     * @returns any
      */
     public static init(options: Option): void {
         Agora.init(options);
@@ -66,9 +73,79 @@ class RtcEngine {
      * @param uid
      * @param token
      * @param info
+     * @returns Promise<any>
      */
     public static joinChannel(channelName: string, uid?: number, token?: string, info?: Object): Promise<any> {
         return Agora.joinChannel({channelName, uid, token, info});
+    }
+
+    /**
+     * switch to specified channel
+     *
+     * This method will switch channel smoothly than you invoke leaveChannel & joinChannel.
+     * Otherwise, it will invoke error by the event
+     * It will occurs two events:
+     * Occurs leaveChannel when achieve leaving stage
+     * Occurs joinChannelSuccess when achieve joining stage
+     * @param channelName {@link string}
+     * @param token {@link string}
+     * @returns Promise<any>
+     */
+    public static switchChannel(channelName: string, token?: string): Promise<any> {
+        return Agora.switchChannel({channelName, token});
+    }
+    
+    /**
+     * Starts to relay media streams across channels.
+     * 
+     * This method will start relay media stream across specified channels. (maximum support 4 channels)
+     * It will occurs event:
+     *  Occurs mediaRelayStateChanged
+     *  Occurs receivedChannelMediaRelay when peer channel received this message
+     * @param config {@link ChannelMediaConfiguration}
+     * @returns Promise<any>
+     */
+    public static startChannelMediaRelay(config: ChannelMediaConfiguration): Promise<any> {
+        return Agora.startChannelMediaRelay(config);
+    }
+
+    /**
+     * Remove to relay media streams across channels.
+     * 
+     * This method will remove & update relay media stream across specified channels. (maximum support relay 4 channels)
+     * It will occurs event:
+     *  Occurs mediaRelayStateChanged
+     * @param config {@link ChannelMediaConfiguration}
+     * @returns Promise<any>
+     */
+    public static removeChannelMediaRelay(config: ChannelMediaConfiguration): Promise<any> {
+        return Agora.removeChannelMediaRelay(config);
+    }
+
+    /**
+     * Updates to relay media streams across channels.
+     * 
+     * This method will update relay media stream across specified channels. (maximum support 4 channels)
+     * It will occurs event:
+     *  Occurs mediaRelayStateChanged
+     * @param config {@link ChannelMediaConfiguration}
+     * @returns Promise<any>
+     */
+    public static updateChannelMediaRelay(config: ChannelMediaConfiguration): Promise<any> {
+        return Agora.updateChannelMediaRelay(config);
+    }
+
+    /**
+     * Stop to relay media streams across channels.
+     * 
+     * This method will stop relay media stream across specified channels.
+     * It will occurs event:
+     *  Occurs mediaRelayStateChanged
+     * @param config {@link ChannelMediaConfiguration}
+     * @returns Promise<any>
+     */
+    public static stopChannelMediaRelay(): Promise<any> {
+        return Agora.stopChannelMediaRelay();
     }
 
     /**
@@ -177,21 +254,19 @@ class RtcEngine {
      * connectionLost | occurs when sdk connection lost | on("connectionLost", evt) |
      * tokenPrivilegeWillExpire | occurs when token will expire | on("tokenPrivilegeWillExpire", evt) |
      * requestToken | occurs when token expired | on("requestToken") |
-     * microphoneEnabled | occurs when microphone enable state changed | on("microphoneEnabled", evt) |
+     * localAudioStateChanged | occurs when local audio device state changed | on("localAudioStateChanged", (state, errorCode) => {}) |
      * audioVolumeIndication | occurs when audio volume indication changed | on("audioVolumeIndication", evt) |
      * activeSpeaker | occurs when detect active speaker | on("activeSpeaker", evt) |
      * firstLocalAudioFrame | occurs when sent first audio frame on local | on("firstLocalAudioFrame", evt) |
      * firstRemoteAudioFrame | occurs when received first audio frame from remote side | on("firstRemoteAudioFrame", evt) |
      * firstRemoteAudioDecoded | occurs when first remote audio decoded | on("firstRemoteAudioDecoded", evt) |
      * firstLocalVideoFrame | occurs when sent first video frame on local | on("firstLocalVideoFrame", evt) |
-     * firstRemoteVideoDecoded | occurs when received first video frame from remote side decoded | on("firstRemoteVideoDecoded", evt) |
      * firstRemoteVideoFrame | occurs when received first video frame from remote side | on("firstRemoteVideoFrame", evt) |
      * userMuteAudio | occurs when user mute audio | on("userMuteAudio", evt) |
-     * userMuteVideo | occurs when user mute video | on("userMuteVideo", evt) |
-     * userEnableVideo | occurs when remote side's user change video enable state | on("userEnableVideo", evt) |
-     * userEnableLocalVideo | occurs when user change video enable state on local | on("userEnableLocalVideo", evt) |
      * videoSizeChanged | occurs when change local or remote side video size or rotation | on("videoSizeChanged", evt) |
      * remoteVideoStateChanged | occurs when remote video state has any changed | on("remoteVideoStateChanged", evt) |
+     * remoteAudioStateChanged | occurs when remote audio state has any changed | on("remoteAudioStateChanged", evt) |
+     * localAudioStats | occurs when engine start to report local audio stats | on("localAudioStats", evt) |
      * localPublishFallbackToAudioOnly | occurs when published stream from local side fallback to audio stream | on("localPublishFallbackToAudioOnly", evt) |
      * remoteSubscribeFallbackToAudioOnly | occurs when subscribed side's stream fallback to audio stream | on("remoteSubscribeFallbackToAudioOnly", evt) |
      * audioRouteChanged | occurs when local audio route changed | on("audioRouteChanged", evt) |
@@ -203,8 +278,6 @@ class RtcEngine {
      * localVideoStats | occurs when reports local video statistics | on("localVideoStats", evt) | 
      * remoteVideoStats | occurs when reports remote video statistics| on("remoteVideoStats", evt) | 
      * remoteAudioStats | occurs when reports remote audio statistics| on("remoteAudioStats", evt) | 
-     * audioTransportStatsOfUid | occurs when reports  transport-layer statistics of each remote audio stream. | on("audioTransportStatsOfUid", evt) | 
-     * videoTransportStatsOfUid | occurs when reports  transport-layer statistics of each remote video stream.| on("videoTransportStatsOfUid", evt) | 
      * audioEffectFinish | occurs when the local audio effect playback finishes. | on("audioEffectFinish", evt) | 
      * streamPublished | occurs when addPublishStreamUrl success| on("streamPublished", evt) | 
      * streamUnpublish | occurs when removePublishStreamUrl success| on("streamUnpublish", evt) | 
@@ -221,6 +294,8 @@ class RtcEngine {
      * mediaMetaDataReceived | occurs when you received media meta data from the remote side through sendMediaData | on("mediaMetaDataReceived", evt) | 
      * localUserRegistered | occurs when you register user account success | on("localUserRegistered", evt) |
      * userInfoUpdated | occurs when you peer side using user account join channel | on("userInfoUpdated", evt) |
+     * receivedChannelMediaRelay | occurs when you received channel media relay | on('receivedChannelMediaRelay", evt)|
+     * mediaRelayStateChanged | occurs when you received remote media relay state changed | on('mediaRelayStateChanged", evt)|
      * ---
      * 
      * @param eventType
@@ -228,6 +303,7 @@ class RtcEngine {
      * @return any
      */
     public static on(eventType: string, listener: (...args: any[]) => any): any {
+        this._eventTypes.add(`${RtcEngine.AG_PREFIX}${eventType}`);
         // convert int32 to uint32
         if ([
             'joinChannelSuccess',
@@ -238,15 +314,11 @@ class RtcEngine {
             'receiveStreamMessage',
             'activeSpeaker',
             'firstRemoteAudioFrame',
-            'firstRemoteVideoDecoded',
             'firstRemoteVideoFrame',
             'userMuteAudio',
-            'userMuteVideo',
-            'userEnableVideo',
-            'userEnableLocalVideo',
             'videoSizeChanged',
-            'firstRemoteAudioDecoded',
             'remoteVideoStateChanged',
+            'remoteAudioStateChanged',
             'remoteSubscribeFallbackToAudioOnly',
             'networkQuality',
             'streamInjectedStatus',
@@ -289,8 +361,6 @@ class RtcEngine {
         if ([
             'remoteAudioStats',
             'remoteVideoStats',
-            'audioTransportStatsOfUid',
-            'videoTransportStatsOfUid',   
         ].indexOf(eventType) != -1) {
             AgoraEventEmitter.addListener(`${RtcEngine.AG_PREFIX}${eventType}`, (args) => {
                 args.stats.uid = this.Int32ToUint32(args.stats.uid);
@@ -379,6 +449,12 @@ class RtcEngine {
      * @return void
      */
     public static destroy() {
+        if (this._eventTypes.size) {
+            for (let eventType of this._eventTypes) {
+                AgoraEventEmitter.removeAllListeners(eventType);
+            }
+            this._eventTypes.clear();
+        }
         return Agora.destroy();
     }
 
@@ -652,8 +728,8 @@ class RtcEngine {
      * @param smooth
      * @return Promise<any>
      */
-    public static enableAudioVolumeIndication(interval: number, smooth: number): Promise<any> {
-        return Agora.enableAudioVolumeIndication(interval, smooth);
+    public static enableAudioVolumeIndication(interval: number, smooth: number, vad: boolean): Promise<any> {
+        return Agora.enableAudioVolumeIndication(interval, smooth, vad);
     }
 
     /**
@@ -663,8 +739,8 @@ class RtcEngine {
      * @param callback
      * @return any
      */
-    public static methodisSpeakerphoneEnabled(callback: Callback<any>): any {
-        return Agora.methodisSpeakerphoneEnabled(callback);
+    public static isSpeakerphoneEnabled(callback: Callback<any>): any {
+        return Agora.isSpeakerphoneEnabled(callback);
     }
 
     /**
@@ -870,7 +946,7 @@ class RtcEngine {
      /**
       * stop play effect for audio mixing
       *
-      * This methods stops the specified effect for audio mixing file by soundid.
+      * This methods stops the specified effect for audio mixing file by soundId.
       * @param sounid
       * @return Promise<{success, value}>
       */
@@ -891,20 +967,20 @@ class RtcEngine {
      /**
       * preload effect for audio mixing file.
       *
-      * This methods preloads the specified audio mixing file to memory by the soundid
-      * @param soundid
-      * @param filepath
+      * This methods preloads the specified audio mixing file to memory by the soundId
+      * @param soundId
+      * @param filePath
       * @return Promise<{success, value}>
       */
-     public static preloadEffect(soundId: number, filepath: string): Promise<any> {
-        return Agora.preloadEffect(soundId, filepath);
+     public static preloadEffect(soundId: number, filePath: string): Promise<any> {
+        return Agora.preloadEffect(soundId, filePath);
      }
 
      /**
       * unload effect
       *
-      * This methods unload the already loaded audio mixing file from memory by the soundid.
-      * @param soundid
+      * This methods unload the already loaded audio mixing file from memory by the soundId.
+      * @param soundId
       * @return Promise<{success, value}>
       */
      public static unloadEffect(soundId: number): Promise<any> {
@@ -912,10 +988,10 @@ class RtcEngine {
      }
 
      /**
-      * pause the specified effect for audio mixing by soundid
+      * pause the specified effect for audio mixing by soundId
       *
-      * This method pauses the specified effect for audio mixing by soundid.
-      * @param soundid
+      * This method pauses the specified effect for audio mixing by soundId.
+      * @param soundId
       * @return Promise<{success, value}>
       */
      public static pauseEffect(soundId: number): Promise<any> {
@@ -926,7 +1002,7 @@ class RtcEngine {
       * pause all effects for audio mixing
       *
       * This method pause all effects for audio mixing.
-      * @param soundid
+      * @param soundId
       * @return Promise<{success, value}>
       */
      public static pauseAllEffects(): Promise<any> {
@@ -934,10 +1010,10 @@ class RtcEngine {
      }
 
      /**
-      * resume audio mixing effect by the specified soundid
+      * resume audio mixing effect by the specified soundId
       *
-      * This method resumes audio mixing effect by the specified soundid
-      * @param soundid
+      * This method resumes audio mixing effect by the specified soundId
+      * @param soundId
       * @return Promise<{success, value}>
       */
      public static resumeEffect(soundId: number): Promise<any> {
@@ -1078,8 +1154,8 @@ class RtcEngine {
      * @param options {@link ImageOption}
      * @return Promise<{success, value}>
      */
-    public static addVideoWatermark(options: ImageOption): Promise<any> {
-        return Agora.addVideoWatermark(options);
+    public static addVideoWatermark(url: string, options: ImageOption): Promise<any> {
+        return Agora.addVideoWatermark({url, options});
     }
 
     /**
@@ -1089,7 +1165,7 @@ class RtcEngine {
      *
      * @return Promise<{success, value}>
      */
-    public static removclearVideoWatermarkse(): Promise<any> {
+    public static clearVideoWatermarks(): Promise<any> {
         return Agora.clearVideoWatermarks();
     }
 
@@ -1317,13 +1393,13 @@ class RtcEngine {
      *
      * This method sets the log file generated path and specified the log level.
      *
-     * @param filepath string
+     * @param filePath string
      * @param level enum
      * @param maxfileSize integer (KB)
      * @return Promise<{success, value}>
      */
-    public static setLog(filepath: string, level: number, maxfileSize: number): Promise<any> {
-        return Agora.setLog(filepath, level, maxfileSize)
+    public static setLog(filePath: string, level: number, maxfileSize: number): Promise<any> {
+        return Agora.setLog(filePath, level, maxfileSize)
     }
 
     /**
@@ -1498,13 +1574,13 @@ class RtcEngine {
      *
      * This method sets the priority of a remote user's media stream.
      * @param uid number
-     * @param userPriority number | The value range is  [50 is "user's priority is hgih", 100 is "the default user's priority is normal"]
+     * @param userPriority number | The value range is  [50 is "user's priority is high", 100 is "the default user's priority is normal"]
      *
      * @return Promise<any>
      */
-    static setRemoteUserPriority(uid: number, userPrority: number): Promise<any> {
+    static setRemoteUserPriority(uid: number, userPriority: number): Promise<any> {
         let uint32 = Platform.OS === 'android' ? this.Uint32ToInt32(uid) : uid;
-        return Agora.setRemoteUserPriority(uint32, userPrority);
+        return Agora.setRemoteUserPriority(uint32, userPriority);
     }
 
     /**
@@ -1512,7 +1588,7 @@ class RtcEngine {
      *
      * note:
      *   Call this method before joining a channel.
-     *   After calling this method, call the stopEchoTest method to end the test. Otherwise, the app cannot run the next echo test, or call the joinchannel method.
+     *   After calling this method, call the stopEchoTest method to end the test. Otherwise, the app cannot run the next echo test, or call the joinChannel method.
      *   In the Live-broadcast profile, only a host can call this method.
      * This method will start an audio call test with interval parameter.
      * In the audio call test, you record your voice. If the recording plays back within the set time interval, the audio devices and the network connection are working properly.
@@ -1609,10 +1685,39 @@ class RtcEngine {
      *         console.log("your currrent camera", info);
      *      })
      * ```
-     * @return Promise{cameraSupportInfo}>
+     * @return Promise<{cameraSupportInfo}>
      */
     static async getCameraInfo(): Promise<any> {
         return Agora.getCameraInfo();
+    }
+
+    /**
+     * Set Private Parameters
+     * @param paramsStr 
+     * @return Promise<bool>
+     */
+    static async setParameters(paramsStr: string): Promise<any> {
+        return Agora.setParameters(paramsStr);
+    }
+
+    /**
+     * Get Private Parameter
+     * @param paramsStr 
+     * @param args 
+     * @return Promise<string>
+     */
+    static async getParameter(paramsStr: string, args: string): Promise<string> {
+        return Agora.getParameter(paramsStr, args);
+    }
+
+    /**
+     * Get Private Parameters
+     * @param paramsStr 
+     * @param args 
+     * @return Promise<string>
+     */
+    static async getParameters(paramsStr: string): Promise<string> {
+        return Agora.getParameters(paramsStr);
     }
 }
 
