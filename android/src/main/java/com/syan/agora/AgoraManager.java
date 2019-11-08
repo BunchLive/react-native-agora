@@ -12,6 +12,7 @@ import java.util.List;
 
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.RtcEngineEx;
 import io.agora.rtc.video.BeautyOptions;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
@@ -28,7 +29,7 @@ public class AgoraManager {
 
     public static AgoraManager sAgoraManager;
 
-    public RtcEngine mRtcEngine;
+    public RtcEngineEx mRtcEngine;
 
     private Context context;
 
@@ -99,7 +100,8 @@ public class AgoraManager {
         //create rtcEngine instance and setup rtcEngine eventHandler
         try {
             this.context = context;
-            this.mRtcEngine = RtcEngine.create(context, options.getString("appid"), mRtcEventHandler);
+            this.mRtcEngine = (RtcEngineEx) RtcEngineEx.create(context, options.getString("appid"), mRtcEventHandler);
+            this.mRtcEngine.setAppType(8);
             if (options.hasKey("secret") && null != options.getString("secret")) {
                 mRtcEngine.setEncryptionSecret(options.getString("secret"));
                 if (options.hasKey("secretMode") && null != options.getString("secretMode")) {

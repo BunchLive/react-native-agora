@@ -32,395 +32,423 @@ public class CompositeRtcEngineEventHandler extends IRtcEngineEventHandler {
 
     //region IRtcEngineEventHandler
 
-    @Override
-    public void onWarning(final int warn) {
+    public void onWarning(int warn) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onWarning(warn);
         }
     }
 
-    @Override
-    public void onError(final int err) {
+    public void onError(int err) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onError(err);
         }
     }
 
-    @Override
-    public void onJoinChannelSuccess(final String channel, final int uid, final int elapsed) {
+    public void onJoinChannelSuccess(String channel, int uid, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onJoinChannelSuccess(channel, uid, elapsed);
         }
     }
 
-    @Override
-    public void onRejoinChannelSuccess(final String channel, final int uid, final int elapsed) {
+    public void onRejoinChannelSuccess(String channel, int uid, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRejoinChannelSuccess(channel, uid, elapsed);
         }
     }
 
-    @Override
-    public void onLeaveChannel(final RtcStats stats) {
+    public void onLeaveChannel(RtcStats stats) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLeaveChannel(stats);
         }
     }
 
-    @Override
-    public void onClientRoleChanged(final int oldRole, final int newRole) {
+    public void onClientRoleChanged(int oldRole, int newRole) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onClientRoleChanged(oldRole, newRole);
         }
     }
 
-    @Override
-    public void onUserInfoUpdated(final int uid, final UserInfo peer) {
-        for (IRtcEngineEventHandler h : handlers) {
-            h.onUserInfoUpdated(uid, peer);
-        }
-    }
-
-    @Override
-    public void onLocalUserRegistered(final int uid, final String userAccount) {
+    public void onLocalUserRegistered(int uid, String userAccount) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLocalUserRegistered(uid, userAccount);
         }
     }
 
-    @Override
-    public void onUserJoined(final int uid, final int elapsed) {
+    public void onUserInfoUpdated(int uid, UserInfo userInfo) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onUserInfoUpdated(uid, userInfo);
+        }
+    }
+
+    public void onUserJoined(int uid, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserJoined(uid, elapsed);
         }
     }
 
-    @Override
-    public void onUserOffline(final int uid, final int reason) {
+    public void onUserOffline(int uid, int reason) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserOffline(uid, reason);
         }
     }
 
-    @Override
-    public void onConnectionStateChanged(final int state, final int reason) {
+    public void onConnectionStateChanged(int state, int reason) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onConnectionStateChanged(state, reason);
         }
     }
 
-    @Override
+    public void onConnectionInterrupted() {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onConnectionInterrupted();
+        }
+    }
+
     public void onConnectionLost() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onConnectionLost();
         }
     }
 
-    @Override
-    public void onApiCallExecuted(final int error, final String api, final String result) {
+    public void onConnectionBanned() {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onConnectionBanned();
+        }
+    }
+
+    public void onApiCallExecuted(int error, String api, String result) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onApiCallExecuted(error, api, result);
         }
     }
 
-    @Override
-    public void onTokenPrivilegeWillExpire(final String token) {
+    public void onTokenPrivilegeWillExpire(String token) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onTokenPrivilegeWillExpire(token);
         }
     }
 
-    @Override
     public void onRequestToken() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRequestToken();
         }
     }
 
-    @Override
-    public void onMicrophoneEnabled(final boolean enabled) {
+    public void onMicrophoneEnabled(boolean enabled) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onMicrophoneEnabled(enabled);
         }
     }
 
-    @Override
-    public void onAudioVolumeIndication(final AudioVolumeInfo[] speakers, final int totalVolume) {
+    public void onAudioVolumeIndication(AudioVolumeInfo[] speakers, int totalVolume) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onAudioVolumeIndication(speakers, totalVolume);
         }
     }
 
-    @Override
-    public void onActiveSpeaker(final int uid) {
+    public void onActiveSpeaker(int uid) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onActiveSpeaker(uid);
         }
     }
 
-    @Override
-    public void onFirstLocalAudioFrame(final int elapsed) {
+    public void onFirstLocalAudioFrame(int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onFirstLocalAudioFrame(elapsed);
         }
     }
 
-    @Override
-    public void onFirstRemoteAudioFrame(final int uid, final int elapsed) {
+    public void onFirstRemoteAudioFrame(int uid, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onFirstRemoteAudioFrame(uid, elapsed);
         }
     }
 
-    @Override
     public void onVideoStopped() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onVideoStopped();
         }
     }
 
-    @Override
-    public void onFirstLocalVideoFrame(final int width, final int height, final int elapsed) {
+    public void onFirstLocalVideoFrame(int width, int height, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onFirstLocalVideoFrame(width, height, elapsed);
         }
     }
 
-    @Override
-    public void onFirstRemoteVideoDecoded(final int uid, final int width, final int height, final int elapsed) {
+    public void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onFirstRemoteVideoDecoded(uid, width, height, elapsed);
         }
     }
 
-    @Override
-    public void onFirstRemoteVideoFrame(final int uid, final int width, final int height, final int elapsed) {
+    public void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onFirstRemoteVideoFrame(uid, width, height, elapsed);
         }
     }
 
-    @Override
-    public void onUserMuteAudio(final int uid, final boolean muted) {
+    public void onUserMuteAudio(int uid, boolean muted) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserMuteAudio(uid, muted);
         }
     }
 
-    @Override
-    public void onUserMuteVideo(final int uid, final boolean muted) {
+    public void onUserMuteVideo(int uid, boolean muted) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserMuteVideo(uid, muted);
         }
     }
 
-    @Override
-    public void onUserEnableVideo(final int uid, final boolean enabled) {
+    public void onUserEnableVideo(int uid, boolean enabled) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserEnableVideo(uid, enabled);
         }
     }
 
-    @Override
-    public void onUserEnableLocalVideo(final int uid, final boolean enabled) {
+    public void onUserEnableLocalVideo(int uid, boolean enabled) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onUserEnableLocalVideo(uid, enabled);
         }
     }
 
-    @Override
-    public void onVideoSizeChanged(final int uid, final int width, final int height, final int rotation) {
+    public void onVideoSizeChanged(int uid, int width, int height, int rotation) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onVideoSizeChanged(uid, width, height, rotation);
         }
     }
 
-    @Override
-    public void onRemoteVideoStateChanged(final int uid, final int state) {
+    public void onRemoteAudioStateChanged(int uid, int state, int reason, int elapsed) {
         for (IRtcEngineEventHandler h : handlers) {
-            h.onRemoteVideoStateChanged(uid, state);
+            h.onRemoteAudioStateChanged(uid, state, reason, elapsed);
         }
     }
 
-    @Override
-    public void onLocalPublishFallbackToAudioOnly(final boolean isFallbackOrRecover) {
+    public void onRemoteVideoStateChanged(int uid, int state, int reason, int elapsed) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onRemoteVideoStateChanged(uid, state, reason, elapsed);
+        }
+    }
+
+    public void onChannelMediaRelayStateChanged(int state, int code) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onChannelMediaRelayStateChanged(state, code);
+        }
+    }
+
+    public void onChannelMediaRelayEvent(int code) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onChannelMediaRelayEvent(code);
+        }
+    }
+
+    public void onLocalPublishFallbackToAudioOnly(boolean isFallbackOrRecover) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLocalPublishFallbackToAudioOnly(isFallbackOrRecover);
         }
     }
 
-    @Override
-    public void onRemoteSubscribeFallbackToAudioOnly(final int uid, final boolean isFallbackOrRecover) {
+    public void onRemoteSubscribeFallbackToAudioOnly(int uid, boolean isFallbackOrRecover) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRemoteSubscribeFallbackToAudioOnly(uid, isFallbackOrRecover);
         }
     }
 
-    @Override
-    public void onAudioRouteChanged(final int routing) {
+    public void onAudioRouteChanged(int routing) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onAudioRouteChanged(routing);
         }
     }
 
-    @Override
     public void onCameraReady() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onCameraReady();
         }
     }
 
-    @Override
-    public void onCameraFocusAreaChanged(final Rect rect) {
+    public void onCameraFocusAreaChanged(Rect rect) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onCameraFocusAreaChanged(rect);
         }
     }
 
-    @Override
-    public void onCameraExposureAreaChanged(final Rect rect) {
+    public void onCameraExposureAreaChanged(Rect rect) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onCameraExposureAreaChanged(rect);
         }
     }
 
-    @Override
-    public void onRtcStats(final RtcStats stats) {
+    public void onAudioQuality(int uid, int quality, short delay, short lost) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onAudioQuality(uid, quality, delay, lost);
+        }
+    }
+
+    public void onRtcStats(RtcStats stats) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRtcStats(stats);
         }
     }
 
-    @Override
-    public void onLastmileQuality(final int quality) {
+    public void onLastmileQuality(int quality) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLastmileQuality(quality);
         }
     }
 
-    @Override
-    public void onLastmileProbeResult(final LastmileProbeResult result) {
+    public void onLastmileProbeResult(LastmileProbeResult result) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLastmileProbeResult(result);
         }
     }
 
-    @Override
-    public void onNetworkQuality(final int uid, final int txQuality, final int rxQuality) {
+    public void onNetworkQuality(int uid, int txQuality, int rxQuality) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onNetworkQuality(uid, txQuality, rxQuality);
         }
     }
 
-    @Override
-    public void onLocalVideoStats(final LocalVideoStats stats) {
+    public void onLocalVideoStats(LocalVideoStats stats) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onLocalVideoStats(stats);
         }
     }
 
-    @Override
-    public void onRemoteVideoStats(final RemoteVideoStats stats) {
+    public void onRemoteVideoStats(RemoteVideoStats stats) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRemoteVideoStats(stats);
         }
     }
 
-    @Override
-    public void onRemoteAudioStats(final RemoteAudioStats stats) {
+    public void onLocalAudioStats(LocalAudioStats stats) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onLocalAudioStats(stats);
+        }
+    }
+
+    public void onRemoteAudioStats(RemoteAudioStats stats) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRemoteAudioStats(stats);
         }
     }
 
-    @Override
-    public void onRemoteAudioTransportStats(final int uid, final int delay, final int lost, final int rxKBitRate) {
+    public void onLocalVideoStat(int sentBitrate, int sentFrameRate) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onLocalVideoStat(sentBitrate, sentFrameRate);
+        }
+    }
+
+    public void onRemoteVideoStat(int uid, int delay, int receivedBitrate, int receivedFrameRate) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onRemoteVideoStat(uid, delay, receivedBitrate, receivedFrameRate);
+        }
+    }
+
+    public void onRemoteAudioTransportStats(int uid, int delay, int lost, int rxKBitRate) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRemoteAudioTransportStats(uid, delay, lost, rxKBitRate);
         }
     }
 
-    @Override
-    public void onRemoteVideoTransportStats(final int uid, final int delay, final int lost, final int rxKBitRate) {
+    public void onRemoteVideoTransportStats(int uid, int delay, int lost, int rxKBitRate) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onRemoteVideoTransportStats(uid, delay, lost, rxKBitRate);
         }
     }
 
-    @Override
-    public void onAudioMixingStateChanged(final int state, final int errorCode) {
+    public void onAudioMixingStateChanged(int state, int errorCode) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onAudioMixingStateChanged(state, errorCode);
         }
     }
 
-    @Override
     public void onAudioMixingFinished() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onAudioMixingFinished();
         }
     }
 
-    @Override
-    public void onAudioEffectFinished(final int soundId) {
+    public void onAudioEffectFinished(int soundId) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onAudioEffectFinished(soundId);
         }
     }
 
-    @Override
-    public void onStreamPublished(final String url, final int error) {
+    public void onFirstRemoteAudioDecoded(int uid, int elapsed) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onFirstRemoteAudioDecoded(uid, elapsed);
+        }
+    }
+
+    public void onLocalAudioStateChanged(int state, int error) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onLocalAudioStateChanged(state, error);
+        }
+    }
+
+    public void onLocalVideoStateChanged(int localVideoState, int error) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onLocalVideoStateChanged(localVideoState, error);
+        }
+    }
+
+    public void onRtmpStreamingStateChanged(String url, int state, int errCode) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onRtmpStreamingStateChanged(url, state, errCode);
+        }
+    }
+
+    public void onStreamPublished(String url, int error) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onStreamPublished(url, error);
         }
     }
 
-    @Override
-    public void onStreamUnpublished(final String url) {
+    public void onStreamUnpublished(String url) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onStreamUnpublished(url);
         }
     }
 
-    @Override
     public void onTranscodingUpdated() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onTranscodingUpdated();
         }
     }
 
-    @Override
-    public void onStreamInjectedStatus(final String url, final int uid, final int status) {
+    public void onStreamInjectedStatus(String url, int uid, int status) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onStreamInjectedStatus(url, uid, status);
         }
     }
 
-    @Override
-    public void onStreamMessage(final int uid, final int streamId, final byte[] data) {
+    public void onStreamMessage(int uid, int streamId, byte[] data) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onStreamMessage(uid, streamId, data);
         }
     }
 
-    @Override
-    public void onStreamMessageError(final int uid, final int streamId, final int error, final int missed, final int cached) {
+    public void onStreamMessageError(int uid, int streamId, int error, int missed, int cached) {
         for (IRtcEngineEventHandler h : handlers) {
             h.onStreamMessageError(uid, streamId, error, missed, cached);
         }
     }
 
-    @Override
     public void onMediaEngineLoadSuccess() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onMediaEngineLoadSuccess();
         }
     }
 
-    @Override
     public void onMediaEngineStartCallSuccess() {
         for (IRtcEngineEventHandler h : handlers) {
             h.onMediaEngineStartCallSuccess();
+        }
+    }
+
+    public void onNetworkTypeChanged(int type) {
+        for (IRtcEngineEventHandler h : handlers) {
+            h.onNetworkTypeChanged(type);
         }
     }
 

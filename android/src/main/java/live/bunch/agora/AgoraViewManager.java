@@ -9,9 +9,9 @@ import com.syan.agora.AgoraVideoView;
 
 public class AgoraViewManager extends SimpleViewManager<AgoraVideoView> {
 
-    public static final String REACT_CLASS = "RCTAgoraVideoView";
+    private static final String REACT_CLASS = "RCTAgoraVideoView";
 
-    public View surfaceView;
+    private View videoView;
 
     @Override
     public String getName() {
@@ -33,15 +33,14 @@ public class AgoraViewManager extends SimpleViewManager<AgoraVideoView> {
         agoraVideoView.setShowLocalVideo(showLocalVideo);
         if (showLocalVideo) {
             AgoraManager.getInstance().setupLocalVideo(agoraVideoView.getRenderMode());
-            surfaceView = AgoraManager.getInstance().getLocalSurfaceView();
-//            surfaceView.setZOrderMediaOverlay(agoraVideoView.getZOrderMediaOverlay());
-            agoraVideoView.addView(surfaceView);
+            videoView = AgoraManager.getInstance().getLocalSurfaceView();
+            agoraVideoView.addView(videoView);
         }
     }
 
     @ReactProp(name = "zOrderMediaOverlay")
     public void setZOrderMediaOverlay(final AgoraVideoView agoraVideoView, boolean zOrderMediaOverlay) {
-//        surfaceView.setZOrderMediaOverlay(zOrderMediaOverlay);
+        // surfaceView.setZOrderMediaOverlay(zOrderMediaOverlay);
     }
 
     @ReactProp(name = "remoteUid")
@@ -49,9 +48,8 @@ public class AgoraViewManager extends SimpleViewManager<AgoraVideoView> {
         agoraVideoView.setRemoteUid(remoteUid);
         if (remoteUid != 0) {
             AgoraManager.getInstance().setupRemoteVideo(remoteUid, agoraVideoView.getRenderMode());
-            surfaceView = AgoraManager.getInstance().getSurfaceView(remoteUid);
-//            surfaceView.setZOrderMediaOverlay(agoraVideoView.getZOrderMediaOverlay());
-            agoraVideoView.addView(surfaceView);
+            videoView = AgoraManager.getInstance().getSurfaceView(remoteUid);
+            agoraVideoView.addView(videoView);
         }
     }
 

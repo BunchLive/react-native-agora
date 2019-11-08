@@ -1,3 +1,5 @@
+// noinspection JSIgnoredPromiseFromCall
+
 import React, { Component, PureComponent } from "react";
 import {
   StyleSheet,
@@ -179,7 +181,7 @@ export default class AgoraComponent extends Component {
     console.log("[joinChannel] " + this.props.channelName);
     RtcEngine.joinChannel(this.props.channelName, this.props.uid);
     RtcEngine.muteLocalAudioStream(this.state.isMute);
-    RtcEngine.enableAudioVolumeIndication(500, 3);
+    RtcEngine.enableAudioVolumeIndication(500, 3, true);
 
     AppState.addEventListener("change", nextAppState => {
       this.setState({ appState: nextAppState });

@@ -2,6 +2,7 @@ package live.bunch.agora;
 
 import android.content.Context;
 import android.graphics.Matrix;
+import android.os.Build.VERSION_CODES;
 import android.util.Size;
 import android.util.SparseArray;
 import android.view.View;
@@ -11,8 +12,10 @@ import com.facebook.react.bridge.ReadableMap;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.RequiresApi;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.RtcEngineEx;
 import io.agora.rtc.mediaio.AgoraTextureView;
 
 import static io.agora.rtc.mediaio.MediaIO.BufferType.BYTE_ARRAY;
@@ -37,7 +40,7 @@ public class AgoraManager {
 
     // --
 
-    public RtcEngine mRtcEngine;
+    public RtcEngineEx mRtcEngine;
 
     private com.syan.agora.AgoraManager mParent;
     private SparseArray<View> mSurfaceViews;
@@ -45,6 +48,7 @@ public class AgoraManager {
     private int mLocalUid = 0;
     private Context context;
     private final CompositeRtcEngineEventHandler mRtcEventHandler = new CompositeRtcEngineEventHandler();
+    private CameraHelper mCameraHelper;
 
     private AgoraManager(com.syan.agora.AgoraManager agoraManager) {
         mParent = agoraManager;
@@ -71,29 +75,12 @@ public class AgoraManager {
         return mCameraHelper.isFrontFacing();
     }
 
+    public int switchCamera() {
+        mCameraHelper.switchCamera();
+        return 0;
+    }
+
     // --
-
-    public int init(Context context, ReadableMap options) {
-        return init(context, null, options);
-    }
-
-    /**
-     * initialize rtc engine
-     */
-    public int init(Context context, IRtcEngineEventHandler rtcEventHandler, ReadableMap options) {
-        if (rtcEventHandler != null) mRtcEventHandler.add(rtcEventHandler);
-
-        this.context = context;
-
-        int r = mParent.init(context, mRtcEventHandler, options);
-        mRtcEngine = new RtcEngineWrapper(mParent.mRtcEngine) {
-            @Override
-            public int switchCamera() {
-                return AgoraManager.this.switchCamera();
-            }
-        };
-        return r;
-    }
 
     public int setLocalRenderMode(final Integer renderMode) {
         return mParent.setLocalRenderMode(renderMode);
@@ -127,12 +114,6 @@ public class AgoraManager {
         return mParent.getConnectionState();
     }
 
-    public int joinChannel(ReadableMap options) {
-        int uid = options.hasKey("uid") ? options.getInt("uid") : 0;
-        this.mLocalUid = uid;
-        return mParent.joinChannel(options);
-    }
-
     public int enableLastmileTest() {
         return mParent.enableLastmileTest();
     }
@@ -151,6 +132,36 @@ public class AgoraManager {
 
     public int leaveChannel() {
         return mParent.leaveChannel();
+    }
+
+    // - AgoraManager changes
+
+    public int init(Context context, ReadableMap options) {
+        return init(context, null, options);
+    }
+
+    /**
+     * initialize rtc engine
+     */
+    public int init(Context context, IRtcEngineEventHandler rtcEventHandler, ReadableMap options) {
+        if (rtcEventHandler != null) mRtcEventHandler.add(rtcEventHandler);
+
+        this.context = context;
+
+        int r = mParent.init(context, mRtcEventHandler, options);
+        mRtcEngine = new RtcEngineWrapper(mParent.mRtcEngine) {
+            @Override
+            public int switchCamera() {
+                return AgoraManager.this.switchCamera();
+            }
+        };
+        return r;
+    }
+
+    public int joinChannel(ReadableMap options) {
+        int uid = options.hasKey("uid") ? options.getInt("uid") : 0;
+        this.mLocalUid = uid;
+        return mParent.joinChannel(options);
     }
 
     // -- TextureView support
@@ -176,13 +187,6 @@ public class AgoraManager {
         return mSurfaceViews.get(uid);
     }
 
-    public int switchCamera() {
-        mCameraHelper.switchCamera();
-        return 0;
-    }
-
-    private CameraHelper mCameraHelper;
-
     public int setupLocalVideo(Integer mode) {
         return setupLocalVideo();
     }
@@ -190,6 +194,7 @@ public class AgoraManager {
     public int setupLocalVideo() {
         if (mCameraHelper == null) {
             mCameraHelper = new CameraHelper(context, new CameraHelper.CameraHelperDelegate() {
+                @RequiresApi (api = VERSION_CODES.LOLLIPOP)
                 @Override
                 public Size getTextureViewSize() {
                     return new Size(480, 640);

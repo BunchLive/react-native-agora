@@ -1,11 +1,12 @@
 package live.bunch.agora;
 
+import javax.microedition.khronos.egl.EGLContext;
+
 import io.agora.rtc.IAudioEffectManager;
 import io.agora.rtc.IAudioFrameObserver;
 import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.PublisherConfiguration;
-import io.agora.rtc.RtcEngine;
+import io.agora.rtc.RtcEngineEx;
 import io.agora.rtc.internal.LastmileProbeConfig;
 import io.agora.rtc.live.LiveInjectStreamConfig;
 import io.agora.rtc.live.LiveTranscoding;
@@ -16,575 +17,660 @@ import io.agora.rtc.video.AgoraImage;
 import io.agora.rtc.video.AgoraVideoFrame;
 import io.agora.rtc.video.BeautyOptions;
 import io.agora.rtc.video.CameraCapturerConfiguration;
+import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoCanvas;
-import io.agora.rtc.video.VideoCompositingLayout;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import io.agora.rtc.video.WatermarkOptions;
 
-public class RtcEngineWrapper extends io.agora.rtc.RtcEngine {
+public class RtcEngineWrapper extends RtcEngineEx {
 
-    private final io.agora.rtc.RtcEngine rtcEngine;
+    private final RtcEngineEx mRtcEngine;
 
-    public RtcEngineWrapper(RtcEngine rtcEngine) {
-        this.rtcEngine = rtcEngine;
-    }
-
-    public int setChannelProfile(int profile) {
-        return rtcEngine.setChannelProfile(profile);
-    }
-
-    public int setClientRole(int role) {
-        return rtcEngine.setClientRole(role);
-    }
-
-    public int joinChannel(String token, String channelName, String optionalInfo, int optionalUid) {
-        return rtcEngine.joinChannel(token, channelName, optionalInfo, optionalUid);
-    }
-
-    public int leaveChannel() {
-        return rtcEngine.leaveChannel();
-    }
-
-    public int renewToken(String token) {
-        return rtcEngine.renewToken(token);
-    }
-
-    public int registerLocalUserAccount(String appId, String userAccount) {
-        return rtcEngine.registerLocalUserAccount(appId, userAccount);
-    }
-
-    public int joinChannelWithUserAccount(String token, String channelName, String userAccount) {
-        return rtcEngine.joinChannelWithUserAccount(token, channelName, userAccount);
-    }
-
-    public int getUserInfoByUserAccount(String userAccount, UserInfo userInfo) {
-        return rtcEngine.getUserInfoByUserAccount(userAccount, userInfo);
-    }
-
-    public int getUserInfoByUid(int uid, UserInfo userInfo) {
-        return rtcEngine.getUserInfoByUid(uid, userInfo);
-    }
-
-    public int enableWebSdkInteroperability(boolean enabled) {
-        return rtcEngine.enableWebSdkInteroperability(enabled);
-    }
-
-    public int getConnectionState() {
-        return rtcEngine.getConnectionState();
-    }
-
-    public int enableAudio() {
-        return rtcEngine.enableAudio();
-    }
-
-    public int disableAudio() {
-        return rtcEngine.disableAudio();
-    }
-
-    public int pauseAudio() {
-        return rtcEngine.pauseAudio();
-    }
-
-    public int resumeAudio() {
-        return rtcEngine.resumeAudio();
-    }
-
-    public int setAudioProfile(int profile, int scenario) {
-        return rtcEngine.setAudioProfile(profile, scenario);
-    }
-
-    public int setHighQualityAudioParameters(boolean fullband, boolean stereo, boolean fullBitrate) {
-        return rtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
-    }
-
-    public int adjustRecordingSignalVolume(int volume) {
-        return rtcEngine.adjustRecordingSignalVolume(volume);
-    }
-
-    public int adjustPlaybackSignalVolume(int volume) {
-        return rtcEngine.adjustPlaybackSignalVolume(volume);
-    }
-
-    public int enableAudioVolumeIndication(int interval, int smooth) {
-        return rtcEngine.enableAudioVolumeIndication(interval, smooth);
-    }
-
-    public int enableAudioQualityIndication(boolean enabled) {
-        return rtcEngine.enableAudioQualityIndication(enabled);
-    }
-
-    public int enableLocalAudio(boolean enabled) {
-        return rtcEngine.enableLocalAudio(enabled);
-    }
-
-    public int muteLocalAudioStream(boolean muted) {
-        return rtcEngine.muteLocalAudioStream(muted);
-    }
-
-    public int muteRemoteAudioStream(int uid, boolean muted) {
-        return rtcEngine.muteRemoteAudioStream(uid, muted);
-    }
-
-    public int muteAllRemoteAudioStreams(boolean muted) {
-        return rtcEngine.muteAllRemoteAudioStreams(muted);
-    }
-
-    public int setDefaultMuteAllRemoteAudioStreams(boolean muted) {
-        return rtcEngine.setDefaultMuteAllRemoteAudioStreams(muted);
-    }
-
-    public int enableVideo() {
-        return rtcEngine.enableVideo();
-    }
-
-    public int disableVideo() {
-        return rtcEngine.disableVideo();
-    }
-
-    public int setVideoProfile(int profile, boolean swapWidthAndHeight) {
-        return rtcEngine.setVideoProfile(profile, swapWidthAndHeight);
-    }
-
-    public int setVideoProfile(int width, int height, int frameRate, int bitrate) {
-        return rtcEngine.setVideoProfile(width, height, frameRate, bitrate);
-    }
-
-    public int setVideoEncoderConfiguration(VideoEncoderConfiguration config) {
-        return rtcEngine.setVideoEncoderConfiguration(config);
-    }
-
-    public int setCameraCapturerConfiguration(CameraCapturerConfiguration config) {
-        return rtcEngine.setCameraCapturerConfiguration(config);
-    }
-
-    public int setupLocalVideo(VideoCanvas local) {
-        return rtcEngine.setupLocalVideo(local);
-    }
-
-    public int setupRemoteVideo(VideoCanvas remote) {
-        return rtcEngine.setupRemoteVideo(remote);
-    }
-
-    public int setLocalRenderMode(int mode) {
-        return rtcEngine.setLocalRenderMode(mode);
-    }
-
-    public int setRemoteRenderMode(int uid, int mode) {
-        return rtcEngine.setRemoteRenderMode(uid, mode);
-    }
-
-    public int startPreview() {
-        return rtcEngine.startPreview();
-    }
-
-    public int stopPreview() {
-        return rtcEngine.stopPreview();
-    }
-
-    public int enableLocalVideo(boolean enabled) {
-        return rtcEngine.enableLocalVideo(enabled);
-    }
-
-    public int muteLocalVideoStream(boolean muted) {
-        return rtcEngine.muteLocalVideoStream(muted);
-    }
-
-    public int muteRemoteVideoStream(int uid, boolean muted) {
-        return rtcEngine.muteRemoteVideoStream(uid, muted);
-    }
-
-    public int muteAllRemoteVideoStreams(boolean muted) {
-        return rtcEngine.muteAllRemoteVideoStreams(muted);
-    }
-
-    public int setDefaultMuteAllRemoteVideoStreams(boolean muted) {
-        return rtcEngine.setDefaultMuteAllRemoteVideoStreams(muted);
-    }
-
-    public int setBeautyEffectOptions(boolean enabled, BeautyOptions options) {
-        return rtcEngine.setBeautyEffectOptions(enabled, options);
-    }
-
-    public int setDefaultAudioRoutetoSpeakerphone(boolean defaultToSpeaker) {
-        return rtcEngine.setDefaultAudioRoutetoSpeakerphone(defaultToSpeaker);
-    }
-
-    public int setEnableSpeakerphone(boolean enabled) {
-        return rtcEngine.setEnableSpeakerphone(enabled);
-    }
-
-    public boolean isSpeakerphoneEnabled() {
-        return rtcEngine.isSpeakerphoneEnabled();
-    }
-
-    public int enableInEarMonitoring(boolean enabled) {
-        return rtcEngine.enableInEarMonitoring(enabled);
-    }
-
-    public int setInEarMonitoringVolume(int volume) {
-        return rtcEngine.setInEarMonitoringVolume(volume);
-    }
-
-    public int useExternalAudioDevice() {
-        return rtcEngine.useExternalAudioDevice();
-    }
-
-    public int setLocalVoicePitch(double pitch) {
-        return rtcEngine.setLocalVoicePitch(pitch);
-    }
-
-    public int setLocalVoiceEqualization(int bandFrequency, int bandGain) {
-        return rtcEngine.setLocalVoiceEqualization(bandFrequency, bandGain);
-    }
-
-    public int setLocalVoiceReverb(int reverbKey, int value) {
-        return rtcEngine.setLocalVoiceReverb(reverbKey, value);
-    }
-
-    public int setLocalVoiceChanger(int voiceChanger) {
-        return rtcEngine.setLocalVoiceChanger(voiceChanger);
-    }
-
-    public int setLocalVoiceReverbPreset(int preset) {
-        return rtcEngine.setLocalVoiceReverbPreset(preset);
-    }
-
-    public int enableSoundPositionIndication(boolean enabled) {
-        return rtcEngine.enableSoundPositionIndication(enabled);
-    }
-
-    public int setRemoteVoicePosition(int uid, double pan, double gain) {
-        return rtcEngine.setRemoteVoicePosition(uid, pan, gain);
-    }
-
-    public int startAudioMixing(String filePath, boolean loopback, boolean replace, int cycle) {
-        return rtcEngine.startAudioMixing(filePath, loopback, replace, cycle);
-    }
-
-    public int stopAudioMixing() {
-        return rtcEngine.stopAudioMixing();
-    }
-
-    public int pauseAudioMixing() {
-        return rtcEngine.pauseAudioMixing();
-    }
-
-    public int resumeAudioMixing() {
-        return rtcEngine.resumeAudioMixing();
-    }
-
-    public int adjustAudioMixingVolume(int volume) {
-        return rtcEngine.adjustAudioMixingVolume(volume);
-    }
-
-    public int adjustAudioMixingPlayoutVolume(int volume) {
-        return rtcEngine.adjustAudioMixingPlayoutVolume(volume);
-    }
-
-    public int adjustAudioMixingPublishVolume(int volume) {
-        return rtcEngine.adjustAudioMixingPublishVolume(volume);
-    }
-
-    public int getAudioMixingPlayoutVolume() {
-        return rtcEngine.getAudioMixingPlayoutVolume();
-    }
-
-    public int getAudioMixingPublishVolume() {
-        return rtcEngine.getAudioMixingPublishVolume();
-    }
-
-    public int getAudioMixingDuration() {
-        return rtcEngine.getAudioMixingDuration();
-    }
-
-    public int getAudioMixingCurrentPosition() {
-        return rtcEngine.getAudioMixingCurrentPosition();
-    }
-
-    public int setAudioMixingPosition(int pos) {
-        return rtcEngine.setAudioMixingPosition(pos);
-    }
-
-    public IAudioEffectManager getAudioEffectManager() {
-        return rtcEngine.getAudioEffectManager();
-    }
-
-    public int startAudioRecording(String filePath, int quality) {
-        return rtcEngine.startAudioRecording(filePath, quality);
-    }
-
-    public int stopAudioRecording() {
-        return rtcEngine.stopAudioRecording();
-    }
-
-    public int startEchoTest() {
-        return rtcEngine.startEchoTest();
-    }
-
-    public int startEchoTest(int intervalInSeconds) {
-        return rtcEngine.startEchoTest(intervalInSeconds);
-    }
-
-    public int stopEchoTest() {
-        return rtcEngine.stopEchoTest();
-    }
-
-    public int enableLastmileTest() {
-        return rtcEngine.enableLastmileTest();
-    }
-
-    public int disableLastmileTest() {
-        return rtcEngine.disableLastmileTest();
-    }
-
-    public int startLastmileProbeTest(LastmileProbeConfig config) {
-        return rtcEngine.startLastmileProbeTest(config);
-    }
-
-    public int stopLastmileProbeTest() {
-        return rtcEngine.stopLastmileProbeTest();
-    }
-
-    public int setVideoSource(IVideoSource source) {
-        return rtcEngine.setVideoSource(source);
-    }
-
-    public int setLocalVideoRenderer(IVideoSink render) {
-        return rtcEngine.setLocalVideoRenderer(render);
-    }
-
-    public int setRemoteVideoRenderer(int uid, IVideoSink render) {
-        return rtcEngine.setRemoteVideoRenderer(uid, render);
-    }
-
-    public int setExternalAudioSource(boolean enabled, int sampleRate, int channels) {
-        return rtcEngine.setExternalAudioSource(enabled, sampleRate, channels);
-    }
-
-    public int pushExternalAudioFrame(byte[] data, long timestamp) {
-        return rtcEngine.pushExternalAudioFrame(data, timestamp);
-    }
-
-    public void setExternalVideoSource(boolean enable, boolean useTexture, boolean pushMode) {
-        rtcEngine.setExternalVideoSource(enable, useTexture, pushMode);
-    }
-
-    public boolean pushExternalVideoFrame(AgoraVideoFrame frame) {
-        return rtcEngine.pushExternalVideoFrame(frame);
-    }
-
-    public boolean isTextureEncodeSupported() {
-        return rtcEngine.isTextureEncodeSupported();
-    }
-
-    public int registerAudioFrameObserver(IAudioFrameObserver observer) {
-        return rtcEngine.registerAudioFrameObserver(observer);
-    }
-
-    public int setRecordingAudioFrameParameters(int sampleRate, int channel, int mode, int samplesPerCall) {
-        return rtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
-    }
-
-    public int setPlaybackAudioFrameParameters(int sampleRate, int channel, int mode, int samplesPerCall) {
-        return rtcEngine.setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
-    }
-
-    public int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall) {
-        return rtcEngine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
-    }
-
-    public int addVideoWatermark(AgoraImage watermark) {
-        return rtcEngine.addVideoWatermark(watermark);
-    }
-
-    public int clearVideoWatermarks() {
-        return rtcEngine.clearVideoWatermarks();
-    }
-
-    public int setRemoteUserPriority(int uid, int userPriority) {
-        return rtcEngine.setRemoteUserPriority(uid, userPriority);
-    }
-
-    public int setLocalPublishFallbackOption(int option) {
-        return rtcEngine.setLocalPublishFallbackOption(option);
-    }
-
-    public int setRemoteSubscribeFallbackOption(int option) {
-        return rtcEngine.setRemoteSubscribeFallbackOption(option);
-    }
-
-    public int enableDualStreamMode(boolean enabled) {
-        return rtcEngine.enableDualStreamMode(enabled);
-    }
-
-    public int setRemoteVideoStreamType(int uid, int streamType) {
-        return rtcEngine.setRemoteVideoStreamType(uid, streamType);
-    }
-
-    public int setRemoteDefaultVideoStreamType(int streamType) {
-        return rtcEngine.setRemoteDefaultVideoStreamType(streamType);
-    }
-
-    public int setEncryptionSecret(String secret) {
-        return rtcEngine.setEncryptionSecret(secret);
-    }
-
-    public int setEncryptionMode(String encryptionMode) {
-        return rtcEngine.setEncryptionMode(encryptionMode);
-    }
-
-    public int addInjectStreamUrl(String url, LiveInjectStreamConfig config) {
-        return rtcEngine.addInjectStreamUrl(url, config);
-    }
-
-    public int removeInjectStreamUrl(String url) {
-        return rtcEngine.removeInjectStreamUrl(url);
-    }
-
-    public int addPublishStreamUrl(String url, boolean transcodingEnabled) {
-        return rtcEngine.addPublishStreamUrl(url, transcodingEnabled);
-    }
-
-    public int removePublishStreamUrl(String url) {
-        return rtcEngine.removePublishStreamUrl(url);
-    }
-
-    public int setLiveTranscoding(LiveTranscoding transcoding) {
-        return rtcEngine.setLiveTranscoding(transcoding);
-    }
-
-    public int configPublisher(PublisherConfiguration config) {
-        return rtcEngine.configPublisher(config);
-    }
-
-    public int setVideoCompositingLayout(VideoCompositingLayout layout) {
-        return rtcEngine.setVideoCompositingLayout(layout);
-    }
-
-    public int clearVideoCompositingLayout() {
-        return rtcEngine.clearVideoCompositingLayout();
-    }
-
-    public int createDataStream(boolean reliable, boolean ordered) {
-        return rtcEngine.createDataStream(reliable, ordered);
-    }
-
-    public int sendStreamMessage(int streamId, byte[] message) {
-        return rtcEngine.sendStreamMessage(streamId, message);
-    }
-
-    public int setVideoQualityParameters(boolean preferFrameRateOverImageQuality) {
-        return rtcEngine.setVideoQualityParameters(preferFrameRateOverImageQuality);
-    }
-
-    public int setLocalVideoMirrorMode(int mode) {
-        return rtcEngine.setLocalVideoMirrorMode(mode);
-    }
-
-    public int switchCamera() {
-        return rtcEngine.switchCamera();
-    }
-
-    public boolean isCameraZoomSupported() {
-        return rtcEngine.isCameraZoomSupported();
-    }
-
-    public boolean isCameraTorchSupported() {
-        return rtcEngine.isCameraTorchSupported();
-    }
-
-    public boolean isCameraFocusSupported() {
-        return rtcEngine.isCameraFocusSupported();
-    }
-
-    public boolean isCameraExposurePositionSupported() {
-        return rtcEngine.isCameraExposurePositionSupported();
-    }
-
-    public boolean isCameraAutoFocusFaceModeSupported() {
-        return rtcEngine.isCameraAutoFocusFaceModeSupported();
-    }
-
-    public int setCameraZoomFactor(float factor) {
-        return rtcEngine.setCameraZoomFactor(factor);
-    }
-
-    public float getCameraMaxZoomFactor() {
-        return rtcEngine.getCameraMaxZoomFactor();
-    }
-
-    public int setCameraFocusPositionInPreview(float positionX, float positionY) {
-        return rtcEngine.setCameraFocusPositionInPreview(positionX, positionY);
-    }
-
-    public int setCameraExposurePosition(float positionXinView, float positionYinView) {
-        return rtcEngine.setCameraExposurePosition(positionXinView, positionYinView);
-    }
-
-    public int setCameraTorchOn(boolean isOn) {
-        return rtcEngine.setCameraTorchOn(isOn);
-    }
-
-    public int setCameraAutoFocusFaceModeEnabled(boolean enabled) {
-        return rtcEngine.setCameraAutoFocusFaceModeEnabled(enabled);
-    }
-
-    public String getCallId() {
-        return rtcEngine.getCallId();
-    }
-
-    public int rate(String callId, int rating, String description) {
-        return rtcEngine.rate(callId, rating, description);
-    }
-
-    public int complain(String callId, String description) {
-        return rtcEngine.complain(callId, description);
-    }
-
-    public int setLogFile(String filePath) {
-        return rtcEngine.setLogFile(filePath);
-    }
-
-    public int setLogFilter(int filter) {
-        return rtcEngine.setLogFilter(filter);
-    }
-
-    public int setLogFileSize(int fileSizeInKBytes) {
-        return rtcEngine.setLogFileSize(fileSizeInKBytes);
-    }
-
-    public long getNativeHandle() {
-        return rtcEngine.getNativeHandle();
+    public RtcEngineWrapper(final RtcEngineEx rtcEngine) {
+        mRtcEngine = rtcEngine;
     }
 
     public void addHandler(IRtcEngineEventHandler handler) {
-        rtcEngine.addHandler(handler);
+        mRtcEngine.addHandler(handler);
+    }
+
+    public void removeHandler(IRtcEngineEventHandler handler) {
+        mRtcEngine.removeHandler(handler);
+    }
+
+    public int setProfile(String profile, boolean merge) {
+        return mRtcEngine.setProfile(profile, merge);
+    }
+
+    public int setAppType(int appType) {
+        return mRtcEngine.setAppType(appType);
+    }
+
+    public int enableTransportQualityIndication(boolean enabled) {
+        return mRtcEngine.enableTransportQualityIndication(enabled);
+    }
+
+    public int playRecap() {
+        return mRtcEngine.playRecap();
+    }
+
+    public int enableRecap(int interval) {
+        return mRtcEngine.enableRecap(interval);
+    }
+
+    public String getParameters(String parameters) {
+        return mRtcEngine.getParameters(parameters);
+    }
+
+    public String makeQualityReportUrl(String channel, int listenerUid, int speakerUid, int format) {
+        return mRtcEngine.makeQualityReportUrl(channel, listenerUid, speakerUid, format);
+    }
+
+    public int updateSharedContext(EGLContext sharedContext) {
+        return mRtcEngine.updateSharedContext(sharedContext);
+    }
+
+    public int updateSharedContext(android.opengl.EGLContext sharedContext) {
+        return mRtcEngine.updateSharedContext(sharedContext);
+    }
+
+    public int setTextureId(int id, EGLContext eglContext, int width, int height, long ts) {
+        return mRtcEngine.setTextureId(id, eglContext, width, height, ts);
+    }
+
+    public int setTextureId(int id, android.opengl.EGLContext eglContext, int width, int height, long ts) {
+        return mRtcEngine.setTextureId(id, eglContext, width, height, ts);
+    }
+
+    public int monitorAudioRouteChange(boolean isMonitoring) {
+        return mRtcEngine.monitorAudioRouteChange(isMonitoring);
+    }
+
+    public int setApiCallMode(int syncCallTimeout) {
+        return mRtcEngine.setApiCallMode(syncCallTimeout);
+    }
+
+    public int setChannelProfile(int profile) {
+        return mRtcEngine.setChannelProfile(profile);
+    }
+
+    public int setClientRole(int role) {
+        return mRtcEngine.setClientRole(role);
+    }
+
+    public int joinChannel(String token, String channelName, String optionalInfo, int optionalUid) {
+        return mRtcEngine.joinChannel(token, channelName, optionalInfo, optionalUid);
+    }
+
+    public int switchChannel(String token, String channelName) {
+        return mRtcEngine.switchChannel(token, channelName);
+    }
+
+    public int leaveChannel() {
+        return mRtcEngine.leaveChannel();
+    }
+
+    public int renewToken(String token) {
+        return mRtcEngine.renewToken(token);
+    }
+
+    public int registerLocalUserAccount(String appId, String userAccount) {
+        return mRtcEngine.registerLocalUserAccount(appId, userAccount);
+    }
+
+    public int joinChannelWithUserAccount(String token, String channelName, String userAccount) {
+        return mRtcEngine.joinChannelWithUserAccount(token, channelName, userAccount);
+    }
+
+    public int getUserInfoByUserAccount(String userAccount, UserInfo userInfo) {
+        return mRtcEngine.getUserInfoByUserAccount(userAccount, userInfo);
+    }
+
+    public int getUserInfoByUid(int uid, UserInfo userInfo) {
+        return mRtcEngine.getUserInfoByUid(uid, userInfo);
+    }
+
+    public int enableWebSdkInteroperability(boolean enabled) {
+        return mRtcEngine.enableWebSdkInteroperability(enabled);
+    }
+
+    public int getConnectionState() {
+        return mRtcEngine.getConnectionState();
+    }
+
+    public int enableAudio() {
+        return mRtcEngine.enableAudio();
+    }
+
+    public int disableAudio() {
+        return mRtcEngine.disableAudio();
+    }
+
+    public int pauseAudio() {
+        return mRtcEngine.pauseAudio();
+    }
+
+    public int resumeAudio() {
+        return mRtcEngine.resumeAudio();
+    }
+
+    public int setAudioProfile(int profile, int scenario) {
+        return mRtcEngine.setAudioProfile(profile, scenario);
+    }
+
+    public int setHighQualityAudioParameters(boolean fullband, boolean stereo, boolean fullBitrate) {
+        return mRtcEngine.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+    }
+
+    public int adjustRecordingSignalVolume(int volume) {
+        return mRtcEngine.adjustRecordingSignalVolume(volume);
+    }
+
+    public int adjustPlaybackSignalVolume(int volume) {
+        return mRtcEngine.adjustPlaybackSignalVolume(volume);
+    }
+
+    public int enableAudioVolumeIndication(int interval, int smooth, boolean report_vad) {
+        return mRtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
+    }
+
+    public int enableAudioQualityIndication(boolean enabled) {
+        return mRtcEngine.enableAudioQualityIndication(enabled);
+    }
+
+    public int enableLocalAudio(boolean enabled) {
+        return mRtcEngine.enableLocalAudio(enabled);
+    }
+
+    public int muteLocalAudioStream(boolean muted) {
+        return mRtcEngine.muteLocalAudioStream(muted);
+    }
+
+    public int muteRemoteAudioStream(int uid, boolean muted) {
+        return mRtcEngine.muteRemoteAudioStream(uid, muted);
+    }
+
+    public int muteAllRemoteAudioStreams(boolean muted) {
+        return mRtcEngine.muteAllRemoteAudioStreams(muted);
+    }
+
+    public int setDefaultMuteAllRemoteAudioStreams(boolean muted) {
+        return mRtcEngine.setDefaultMuteAllRemoteAudioStreams(muted);
+    }
+
+    public int enableVideo() {
+        return mRtcEngine.enableVideo();
+    }
+
+    public int disableVideo() {
+        return mRtcEngine.disableVideo();
+    }
+
+    public int setVideoProfile(int profile, boolean swapWidthAndHeight) {
+        return mRtcEngine.setVideoProfile(profile, swapWidthAndHeight);
+    }
+
+    public int setVideoProfile(int width, int height, int frameRate, int bitrate) {
+        return mRtcEngine.setVideoProfile(width, height, frameRate, bitrate);
+    }
+
+    public int setVideoEncoderConfiguration(VideoEncoderConfiguration config) {
+        return mRtcEngine.setVideoEncoderConfiguration(config);
+    }
+
+    public int setCameraCapturerConfiguration(CameraCapturerConfiguration config) {
+        return mRtcEngine.setCameraCapturerConfiguration(config);
+    }
+
+    public int setupLocalVideo(VideoCanvas local) {
+        return mRtcEngine.setupLocalVideo(local);
+    }
+
+    public int setupRemoteVideo(VideoCanvas remote) {
+        return mRtcEngine.setupRemoteVideo(remote);
+    }
+
+    public int setLocalRenderMode(int mode) {
+        return mRtcEngine.setLocalRenderMode(mode);
+    }
+
+    public int setRemoteRenderMode(int uid, int mode) {
+        return mRtcEngine.setRemoteRenderMode(uid, mode);
+    }
+
+    public int startPreview() {
+        return mRtcEngine.startPreview();
+    }
+
+    public int stopPreview() {
+        return mRtcEngine.stopPreview();
+    }
+
+    public int enableLocalVideo(boolean enabled) {
+        return mRtcEngine.enableLocalVideo(enabled);
+    }
+
+    public int muteLocalVideoStream(boolean muted) {
+        return mRtcEngine.muteLocalVideoStream(muted);
+    }
+
+    public int muteRemoteVideoStream(int uid, boolean muted) {
+        return mRtcEngine.muteRemoteVideoStream(uid, muted);
+    }
+
+    public int muteAllRemoteVideoStreams(boolean muted) {
+        return mRtcEngine.muteAllRemoteVideoStreams(muted);
+    }
+
+    public int setDefaultMuteAllRemoteVideoStreams(boolean muted) {
+        return mRtcEngine.setDefaultMuteAllRemoteVideoStreams(muted);
+    }
+
+    public int setBeautyEffectOptions(boolean enabled, BeautyOptions options) {
+        return mRtcEngine.setBeautyEffectOptions(enabled, options);
+    }
+
+    public int setDefaultAudioRoutetoSpeakerphone(boolean defaultToSpeaker) {
+        return mRtcEngine.setDefaultAudioRoutetoSpeakerphone(defaultToSpeaker);
+    }
+
+    public int setEnableSpeakerphone(boolean enabled) {
+        return mRtcEngine.setEnableSpeakerphone(enabled);
+    }
+
+    public boolean isSpeakerphoneEnabled() {
+        return mRtcEngine.isSpeakerphoneEnabled();
+    }
+
+    public int enableInEarMonitoring(boolean enabled) {
+        return mRtcEngine.enableInEarMonitoring(enabled);
+    }
+
+    public int setInEarMonitoringVolume(int volume) {
+        return mRtcEngine.setInEarMonitoringVolume(volume);
+    }
+
+    public int useExternalAudioDevice() {
+        return mRtcEngine.useExternalAudioDevice();
+    }
+
+    public int setLocalVoicePitch(double pitch) {
+        return mRtcEngine.setLocalVoicePitch(pitch);
+    }
+
+    public int setLocalVoiceEqualization(int bandFrequency, int bandGain) {
+        return mRtcEngine.setLocalVoiceEqualization(bandFrequency, bandGain);
+    }
+
+    public int setLocalVoiceReverb(int reverbKey, int value) {
+        return mRtcEngine.setLocalVoiceReverb(reverbKey, value);
+    }
+
+    public int setLocalVoiceChanger(int voiceChanger) {
+        return mRtcEngine.setLocalVoiceChanger(voiceChanger);
+    }
+
+    public int setLocalVoiceReverbPreset(int preset) {
+        return mRtcEngine.setLocalVoiceReverbPreset(preset);
+    }
+
+    public int enableSoundPositionIndication(boolean enabled) {
+        return mRtcEngine.enableSoundPositionIndication(enabled);
+    }
+
+    public int setRemoteVoicePosition(int uid, double pan, double gain) {
+        return mRtcEngine.setRemoteVoicePosition(uid, pan, gain);
+    }
+
+    public int startAudioMixing(String filePath, boolean loopback, boolean replace, int cycle) {
+        return mRtcEngine.startAudioMixing(filePath, loopback, replace, cycle);
+    }
+
+    public int stopAudioMixing() {
+        return mRtcEngine.stopAudioMixing();
+    }
+
+    public int pauseAudioMixing() {
+        return mRtcEngine.pauseAudioMixing();
+    }
+
+    public int resumeAudioMixing() {
+        return mRtcEngine.resumeAudioMixing();
+    }
+
+    public int adjustAudioMixingVolume(int volume) {
+        return mRtcEngine.adjustAudioMixingVolume(volume);
+    }
+
+    public int adjustAudioMixingPlayoutVolume(int volume) {
+        return mRtcEngine.adjustAudioMixingPlayoutVolume(volume);
+    }
+
+    public int adjustAudioMixingPublishVolume(int volume) {
+        return mRtcEngine.adjustAudioMixingPublishVolume(volume);
+    }
+
+    public int getAudioMixingPlayoutVolume() {
+        return mRtcEngine.getAudioMixingPlayoutVolume();
+    }
+
+    public int getAudioMixingPublishVolume() {
+        return mRtcEngine.getAudioMixingPublishVolume();
+    }
+
+    public int getAudioMixingDuration() {
+        return mRtcEngine.getAudioMixingDuration();
+    }
+
+    public int getAudioMixingCurrentPosition() {
+        return mRtcEngine.getAudioMixingCurrentPosition();
+    }
+
+    public int setAudioMixingPosition(int pos) {
+        return mRtcEngine.setAudioMixingPosition(pos);
+    }
+
+    public IAudioEffectManager getAudioEffectManager() {
+        return mRtcEngine.getAudioEffectManager();
+    }
+
+    public int startAudioRecording(String filePath, int quality) {
+        return mRtcEngine.startAudioRecording(filePath, quality);
+    }
+
+    public int startAudioRecording(String filePath, int sampleRate, int quality) {
+        return mRtcEngine.startAudioRecording(filePath, sampleRate, quality);
+    }
+
+    public int stopAudioRecording() {
+        return mRtcEngine.stopAudioRecording();
+    }
+
+    public int startEchoTest() {
+        return mRtcEngine.startEchoTest();
+    }
+
+    public int startEchoTest(int intervalInSeconds) {
+        return mRtcEngine.startEchoTest(intervalInSeconds);
+    }
+
+    public int stopEchoTest() {
+        return mRtcEngine.stopEchoTest();
+    }
+
+    public int enableLastmileTest() {
+        return mRtcEngine.enableLastmileTest();
+    }
+
+    public int disableLastmileTest() {
+        return mRtcEngine.disableLastmileTest();
+    }
+
+    public int startLastmileProbeTest(LastmileProbeConfig config) {
+        return mRtcEngine.startLastmileProbeTest(config);
+    }
+
+    public int stopLastmileProbeTest() {
+        return mRtcEngine.stopLastmileProbeTest();
+    }
+
+    public int setVideoSource(IVideoSource source) {
+        return mRtcEngine.setVideoSource(source);
+    }
+
+    public int setLocalVideoRenderer(IVideoSink render) {
+        return mRtcEngine.setLocalVideoRenderer(render);
+    }
+
+    public int setRemoteVideoRenderer(int uid, IVideoSink render) {
+        return mRtcEngine.setRemoteVideoRenderer(uid, render);
+    }
+
+    public int setExternalAudioSink(boolean enabled, int sampleRate, int channels) {
+        return mRtcEngine.setExternalAudioSink(enabled, sampleRate, channels);
+    }
+
+    public int pullPlaybackAudioFrame(byte[] data, int lengthInByte) {
+        return mRtcEngine.pullPlaybackAudioFrame(data, lengthInByte);
+    }
+
+    public int setExternalAudioSource(boolean enabled, int sampleRate, int channels) {
+        return mRtcEngine.setExternalAudioSource(enabled, sampleRate, channels);
+    }
+
+    public int pushExternalAudioFrame(byte[] data, long timestamp) {
+        return mRtcEngine.pushExternalAudioFrame(data, timestamp);
+    }
+
+    public void setExternalVideoSource(boolean enable, boolean useTexture, boolean pushMode) {
+        mRtcEngine.setExternalVideoSource(enable, useTexture, pushMode);
+    }
+
+    public boolean pushExternalVideoFrame(AgoraVideoFrame frame) {
+        return mRtcEngine.pushExternalVideoFrame(frame);
+    }
+
+    public boolean isTextureEncodeSupported() {
+        return mRtcEngine.isTextureEncodeSupported();
+    }
+
+    public int registerAudioFrameObserver(IAudioFrameObserver observer) {
+        return mRtcEngine.registerAudioFrameObserver(observer);
+    }
+
+    public int setRecordingAudioFrameParameters(int sampleRate, int channel, int mode, int samplesPerCall) {
+        return mRtcEngine.setRecordingAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
+    }
+
+    public int setPlaybackAudioFrameParameters(int sampleRate, int channel, int mode, int samplesPerCall) {
+        return mRtcEngine.setPlaybackAudioFrameParameters(sampleRate, channel, mode, samplesPerCall);
+    }
+
+    public int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall) {
+        return mRtcEngine.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
+    }
+
+    public int addVideoWatermark(AgoraImage watermark) {
+        return mRtcEngine.addVideoWatermark(watermark);
+    }
+
+    public int addVideoWatermark(String watermarkUrl, WatermarkOptions options) {
+        return mRtcEngine.addVideoWatermark(watermarkUrl, options);
+    }
+
+    public int clearVideoWatermarks() {
+        return mRtcEngine.clearVideoWatermarks();
+    }
+
+    public int setRemoteUserPriority(int uid, int userPriority) {
+        return mRtcEngine.setRemoteUserPriority(uid, userPriority);
+    }
+
+    public int setLocalPublishFallbackOption(int option) {
+        return mRtcEngine.setLocalPublishFallbackOption(option);
+    }
+
+    public int setRemoteSubscribeFallbackOption(int option) {
+        return mRtcEngine.setRemoteSubscribeFallbackOption(option);
+    }
+
+    public int enableDualStreamMode(boolean enabled) {
+        return mRtcEngine.enableDualStreamMode(enabled);
+    }
+
+    public int setRemoteVideoStreamType(int uid, int streamType) {
+        return mRtcEngine.setRemoteVideoStreamType(uid, streamType);
+    }
+
+    public int setRemoteDefaultVideoStreamType(int streamType) {
+        return mRtcEngine.setRemoteDefaultVideoStreamType(streamType);
+    }
+
+    public int setEncryptionSecret(String secret) {
+        return mRtcEngine.setEncryptionSecret(secret);
+    }
+
+    public int setEncryptionMode(String encryptionMode) {
+        return mRtcEngine.setEncryptionMode(encryptionMode);
+    }
+
+    public int addInjectStreamUrl(String url, LiveInjectStreamConfig config) {
+        return mRtcEngine.addInjectStreamUrl(url, config);
+    }
+
+    public int removeInjectStreamUrl(String url) {
+        return mRtcEngine.removeInjectStreamUrl(url);
+    }
+
+    public int addPublishStreamUrl(String url, boolean transcodingEnabled) {
+        return mRtcEngine.addPublishStreamUrl(url, transcodingEnabled);
+    }
+
+    public int removePublishStreamUrl(String url) {
+        return mRtcEngine.removePublishStreamUrl(url);
+    }
+
+    public int setLiveTranscoding(LiveTranscoding transcoding) {
+        return mRtcEngine.setLiveTranscoding(transcoding);
+    }
+
+    public int createDataStream(boolean reliable, boolean ordered) {
+        return mRtcEngine.createDataStream(reliable, ordered);
+    }
+
+    public int sendStreamMessage(int streamId, byte[] message) {
+        return mRtcEngine.sendStreamMessage(streamId, message);
+    }
+
+    public int setVideoQualityParameters(boolean preferFrameRateOverImageQuality) {
+        return mRtcEngine.setVideoQualityParameters(preferFrameRateOverImageQuality);
+    }
+
+    public int setLocalVideoMirrorMode(int mode) {
+        return mRtcEngine.setLocalVideoMirrorMode(mode);
+    }
+
+    public int switchCamera() {
+        return mRtcEngine.switchCamera();
+    }
+
+    public boolean isCameraZoomSupported() {
+        return mRtcEngine.isCameraZoomSupported();
+    }
+
+    public boolean isCameraTorchSupported() {
+        return mRtcEngine.isCameraTorchSupported();
+    }
+
+    public boolean isCameraFocusSupported() {
+        return mRtcEngine.isCameraFocusSupported();
+    }
+
+    public boolean isCameraExposurePositionSupported() {
+        return mRtcEngine.isCameraExposurePositionSupported();
+    }
+
+    public boolean isCameraAutoFocusFaceModeSupported() {
+        return mRtcEngine.isCameraAutoFocusFaceModeSupported();
+    }
+
+    public int setCameraZoomFactor(float factor) {
+        return mRtcEngine.setCameraZoomFactor(factor);
+    }
+
+    public float getCameraMaxZoomFactor() {
+        return mRtcEngine.getCameraMaxZoomFactor();
+    }
+
+    public int setCameraFocusPositionInPreview(float positionX, float positionY) {
+        return mRtcEngine.setCameraFocusPositionInPreview(positionX, positionY);
+    }
+
+    public int setCameraExposurePosition(float positionXinView, float positionYinView) {
+        return mRtcEngine.setCameraExposurePosition(positionXinView, positionYinView);
+    }
+
+    public int setCameraTorchOn(boolean isOn) {
+        return mRtcEngine.setCameraTorchOn(isOn);
+    }
+
+    public int setCameraAutoFocusFaceModeEnabled(boolean enabled) {
+        return mRtcEngine.setCameraAutoFocusFaceModeEnabled(enabled);
+    }
+
+    public String getCallId() {
+        return mRtcEngine.getCallId();
+    }
+
+    public int rate(String callId, int rating, String description) {
+        return mRtcEngine.rate(callId, rating, description);
+    }
+
+    public int complain(String callId, String description) {
+        return mRtcEngine.complain(callId, description);
+    }
+
+    public int setLogFile(String filePath) {
+        return mRtcEngine.setLogFile(filePath);
+    }
+
+    public int setLogFilter(int filter) {
+        return mRtcEngine.setLogFilter(filter);
+    }
+
+    public int setLogFileSize(int fileSizeInKBytes) {
+        return mRtcEngine.setLogFileSize(fileSizeInKBytes);
+    }
+
+    public long getNativeHandle() {
+        return mRtcEngine.getNativeHandle();
     }
 
     public boolean enableHighPerfWifiMode(boolean enable) {
-        return rtcEngine.enableHighPerfWifiMode(enable);
+        return mRtcEngine.enableHighPerfWifiMode(enable);
     }
 
     public void monitorHeadsetEvent(boolean monitor) {
-        rtcEngine.monitorHeadsetEvent(monitor);
+        mRtcEngine.monitorHeadsetEvent(monitor);
     }
 
     public void monitorBluetoothHeadsetEvent(boolean monitor) {
-        rtcEngine.monitorBluetoothHeadsetEvent(monitor);
+        mRtcEngine.monitorBluetoothHeadsetEvent(monitor);
     }
 
     public void setPreferHeadset(boolean enabled) {
-        rtcEngine.setPreferHeadset(enabled);
+        mRtcEngine.setPreferHeadset(enabled);
     }
 
     public int setParameters(String parameters) {
-        return rtcEngine.setParameters(parameters);
+        return mRtcEngine.setParameters(parameters);
     }
 
     public String getParameter(String parameter, String args) {
-        return rtcEngine.getParameter(parameter, args);
+        return mRtcEngine.getParameter(parameter, args);
     }
 
     public int registerMediaMetadataObserver(IMetadataObserver observer, int type) {
-        return rtcEngine.registerMediaMetadataObserver(observer, type);
+        return mRtcEngine.registerMediaMetadataObserver(observer, type);
+    }
+
+    public int startChannelMediaRelay(ChannelMediaRelayConfiguration channelMediaRelayConfiguration) {
+        return mRtcEngine.startChannelMediaRelay(channelMediaRelayConfiguration);
+    }
+
+    public int stopChannelMediaRelay() {
+        return mRtcEngine.stopChannelMediaRelay();
+    }
+
+    public int updateChannelMediaRelay(ChannelMediaRelayConfiguration channelMediaRelayConfiguration) {
+        return mRtcEngine.updateChannelMediaRelay(channelMediaRelayConfiguration);
+    }
+
+    public int startDumpVideoReceiveTrack(int uid) {
+        return mRtcEngine.startDumpVideoReceiveTrack(uid);
+    }
+
+    public int stopDumpVideoReceiveTrack() {
+        return mRtcEngine.stopDumpVideoReceiveTrack();
     }
 }
