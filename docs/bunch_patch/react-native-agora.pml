@@ -1,13 +1,15 @@
 @startuml
 title <b><i>react-native-agora</i></b>
-header Nov 07 2019
-center footer 2.8.0-alpha.2
+header Nov 08 2019
+center footer 2.9.1-alpha.2
 
 package io.agora.rtc {
   interface RtcEngine
+  abstract RtcEngineEx
   class RtcEngineImpl
 
-  .RtcEngine <|.. .RtcEngineImpl
+  .RtcEngine <|.. .RtcEngineEx
+  .RtcEngineEx <|.. .RtcEngineImpl
 }
 
 package com.syan.agora {
