@@ -1,4 +1,7 @@
-export const APPID = "***REMOVED***";
+import { APP_ID } from "./agora_app_id.json";
+
+export const APPID = APP_ID;
+
 // iPhoneX Xs
 const X_WIDTH = 375;
 const X_HEIGHT = 812;
