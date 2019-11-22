@@ -11,9 +11,9 @@ import io.agora.rtc.mediaio.MediaIO.PixelFormat;
 import io.agora.rtc.mediaio.TextureSource;
 
 public class AgoraTextureCamera2 extends TextureSource {
-
     private final Context mContext;
     private final CameraHelper mCameraHelper;
+    private boolean mStarted = false;
 
     public AgoraTextureCamera2(Context context, final int width, final int height, CameraHelper cameraHelper) {
         super(null, width, height);
@@ -23,39 +23,37 @@ public class AgoraTextureCamera2 extends TextureSource {
 
     public void onTextureFrameAvailable(int oesTextureId, float[] transformMatrix, long timestampNs) {
         super.onTextureFrameAvailable(oesTextureId, transformMatrix, timestampNs);
-        int rotation = this.getFrameOrientation();
-//        if (mCameraHelper.isFrontFacing()) {
-//            transformMatrix = RendererCommon.multiplyMatrices(transformMatrix, RendererCommon.horizontalFlipMatrix());
-//        }
 
-        WeakReference<IVideoFrameConsumer> consumerWeakRef = this.mConsumer;
-        if (consumerWeakRef != null) {
+        WeakReference<IVideoFrameConsumer> consumerWeakRef = mConsumer;
+        if (mStarted && consumerWeakRef != null) {
             IVideoFrameConsumer consumer = consumerWeakRef.get();
             if (consumer != null) {
-                consumer.consumeTextureFrame(oesTextureId, PixelFormat.TEXTURE_OES.intValue(), this.mWidth, this.mHeight, rotation, System.currentTimeMillis(), transformMatrix);
+                consumer.consumeTextureFrame(oesTextureId, PixelFormat.TEXTURE_OES.intValue(), mWidth, mHeight, getFrameOrientation(), System.currentTimeMillis(), transformMatrix);
             }
         }
     }
 
     @Override
     protected boolean onCapturerOpened() {
-        return true;
-    }
-
-    @Override
-    protected boolean onCapturerStarted() {
         mCameraHelper.start(getSurfaceTexture());
         return true;
     }
 
     @Override
+    protected boolean onCapturerStarted() {
+        mStarted = true;
+        return true;
+    }
+
+    @Override
     protected void onCapturerStopped() {
-        mCameraHelper.stop();
+        mStarted = false;
+
     }
 
     @Override
     protected void onCapturerClosed() {
-
+        mCameraHelper.stop();
     }
 
     // --
@@ -68,10 +66,6 @@ public class AgoraTextureCamera2 extends TextureSource {
             case Surface.ROTATION_90: return 90;
             case Surface.ROTATION_180: return 180;
             case Surface.ROTATION_270: return 270;
-
-
-
-
         }
     }
 
