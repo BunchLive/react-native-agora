@@ -49,6 +49,7 @@ public class AgoraManager {
     private Context context;
     private final CompositeRtcEngineEventHandler mRtcEventHandler = new CompositeRtcEngineEventHandler();
     private CameraHelper mCameraHelper;
+    private boolean mLocalVideoStreamMuted = false;
 
     private AgoraManager(com.syan.agora.AgoraManager agoraManager) {
         mParent = agoraManager;
@@ -69,6 +70,10 @@ public class AgoraManager {
 
     public boolean isLocalAudioStreamMuted() {
         return "true".equals(mRtcEngine.getParameter("che.audio.mute_me", "false"));
+    }
+
+    public boolean isLocalVideoStreamMuted() {
+        return mLocalVideoStreamMuted;
     }
 
     public boolean isUsingFrontCamera() {
@@ -153,6 +158,12 @@ public class AgoraManager {
             @Override
             public int switchCamera() {
                 return AgoraManager.this.switchCamera();
+            }
+
+            @Override
+            public int muteLocalVideoStream(boolean muted) {
+                AgoraManager.this.mLocalVideoStreamMuted = muted;
+                return super.muteLocalVideoStream(muted);
             }
         };
         return r;

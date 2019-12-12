@@ -244,16 +244,15 @@ export default class AgoraComponent extends Component {
 
   toggleVideo = () => {
     const showVideo = !this.state.showVideo;
-    this.setState({
-      showVideo
-    });
-    if (showVideo) {
-      RtcEngine.enableVideo();
-      RtcEngine.startPreview();
-    } else {
-      RtcEngine.disableVideo();
-      RtcEngine.stopPreview();
-    }
+    this.setState({ showVideo });
+    RtcEngine.muteLocalVideoStream(!showVideo);
+    // if (showVideo) {
+    //   RtcEngine.enableVideo();
+    //   RtcEngine.startPreview();
+    // } else {
+    //   RtcEngine.disableVideo();
+    //   RtcEngine.stopPreview();
+    // }
   };
 
   toggleHideButtons = () => {
