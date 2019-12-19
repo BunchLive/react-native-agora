@@ -1,31 +1,12 @@
 package com.syan.agora;
 
 import android.content.Context;
-import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
-import android.media.MediaCodecList;
-import android.media.MediaFormat;
-import android.media.MediaMuxer;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import com.syan.agora.media.MediaDataAudioObserver;
 import com.syan.agora.media.MediaDataVideoObserver;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-import static android.media.MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar;
-import static android.media.MediaFormat.KEY_BIT_RATE;
-import static android.media.MediaFormat.KEY_COLOR_FORMAT;
-import static android.media.MediaFormat.KEY_FRAME_RATE;
-import static android.media.MediaFormat.KEY_I_FRAME_INTERVAL;
 
 /**
  * Created by DB on 2017/6/27.

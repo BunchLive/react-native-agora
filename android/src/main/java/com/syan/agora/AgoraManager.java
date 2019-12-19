@@ -1,26 +1,23 @@
 package com.syan.agora;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceView;
 
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.WritableMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.video.BeautyOptions;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 
-import static io.agora.rtc.video.VideoEncoderConfiguration.*;
+import static io.agora.rtc.video.VideoEncoderConfiguration.FRAME_RATE;
+import static io.agora.rtc.video.VideoEncoderConfiguration.ORIENTATION_MODE;
 
 
 /**
@@ -211,8 +208,8 @@ public class AgoraManager {
 
     /**
      * set remote video render mode
-     * @param Integer uid
-     * @param Integer renderMode
+     * @param uid Integer
+     * @param renderMode Integer
      * @return result state
      */
     public int setRemoteRenderMode(final Integer uid, final Integer renderMode) {

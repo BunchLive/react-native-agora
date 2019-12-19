@@ -1,8 +1,8 @@
 package com.syan.agora;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
-import android.view.SurfaceView;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -38,9 +37,65 @@ import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.ChannelMediaInfo;
 import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import live.bunch.agora.AgoraManager;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
-import static com.syan.agora.AgoraConst.*;
+import static com.syan.agora.AgoraConst.AGActiveSpeaker;
+import static com.syan.agora.AgoraConst.AGApiCallExecute;
+import static com.syan.agora.AgoraConst.AGAudioEffectFinish;
+import static com.syan.agora.AgoraConst.AGAudioMixingStateChanged;
+import static com.syan.agora.AgoraConst.AGAudioRouteChanged;
+import static com.syan.agora.AgoraConst.AGAudioVolumeIndication;
+import static com.syan.agora.AgoraConst.AGCameraExposureAreaChanged;
+import static com.syan.agora.AgoraConst.AGCameraFocusAreaChanged;
+import static com.syan.agora.AgoraConst.AGClientRoleChanged;
+import static com.syan.agora.AgoraConst.AGConnectionLost;
+import static com.syan.agora.AgoraConst.AGConnectionStateChanged;
+import static com.syan.agora.AgoraConst.AGError;
+import static com.syan.agora.AgoraConst.AGFirstLocalAudioFrame;
+import static com.syan.agora.AgoraConst.AGFirstLocalVideoFrame;
+import static com.syan.agora.AgoraConst.AGFirstRemoteAudioDecoded;
+import static com.syan.agora.AgoraConst.AGFirstRemoteAudioFrame;
+import static com.syan.agora.AgoraConst.AGFirstRemoteVideoFrame;
+import static com.syan.agora.AgoraConst.AGJoinChannelSuccess;
+import static com.syan.agora.AgoraConst.AGLastmileProbeResult;
+import static com.syan.agora.AgoraConst.AGLastmileQuality;
+import static com.syan.agora.AgoraConst.AGLeaveChannel;
+import static com.syan.agora.AgoraConst.AGLocalAudioStateChanged;
+import static com.syan.agora.AgoraConst.AGLocalAudioStats;
+import static com.syan.agora.AgoraConst.AGLocalPublishFallbackToAudioOnly;
+import static com.syan.agora.AgoraConst.AGLocalUserRegistered;
+import static com.syan.agora.AgoraConst.AGLocalVideoChanged;
+import static com.syan.agora.AgoraConst.AGLocalVideoStats;
+import static com.syan.agora.AgoraConst.AGMediaEngineLoaded;
+import static com.syan.agora.AgoraConst.AGMediaEngineStartCall;
+import static com.syan.agora.AgoraConst.AGMediaRelayStateChanged;
+import static com.syan.agora.AgoraConst.AGNetworkQuality;
+import static com.syan.agora.AgoraConst.AGNetworkTypeChanged;
+import static com.syan.agora.AgoraConst.AGOccurStreamMessageError;
+import static com.syan.agora.AgoraConst.AGReceiveStreamMessage;
+import static com.syan.agora.AgoraConst.AGReceivedChannelMediaRelay;
+import static com.syan.agora.AgoraConst.AGRejoinChannelSuccess;
+import static com.syan.agora.AgoraConst.AGRemoteAudioStateChanged;
+import static com.syan.agora.AgoraConst.AGRemoteAudioStats;
+import static com.syan.agora.AgoraConst.AGRemoteSubscribeFallbackToAudioOnly;
+import static com.syan.agora.AgoraConst.AGRemoteVideoStateChanged;
+import static com.syan.agora.AgoraConst.AGRemoteVideoStats;
+import static com.syan.agora.AgoraConst.AGRequestToken;
+import static com.syan.agora.AgoraConst.AGRtcStats;
+import static com.syan.agora.AgoraConst.AGRtmpStreamingStateChanged;
+import static com.syan.agora.AgoraConst.AGStreamInjectedStatus;
+import static com.syan.agora.AgoraConst.AGStreamPublished;
+import static com.syan.agora.AgoraConst.AGStreamUnpublish;
+import static com.syan.agora.AgoraConst.AGTokenPrivilegeWillExpire;
+import static com.syan.agora.AgoraConst.AGTranscodingUpdate;
+import static com.syan.agora.AgoraConst.AGUserInfoUpdated;
+import static com.syan.agora.AgoraConst.AGUserJoined;
+import static com.syan.agora.AgoraConst.AGUserMuteAudio;
+import static com.syan.agora.AgoraConst.AGUserOffline;
+import static com.syan.agora.AgoraConst.AGVideoSizeChanged;
+import static com.syan.agora.AgoraConst.AGWarning;
+import static com.syan.agora.AgoraConst.AG_PREFIX;
 
 public class AgoraModule extends ReactContextBaseJavaModule {
 
@@ -2104,30 +2159,30 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     private static boolean recording = false;
 
-    // TODO: need implementation
-    @ReactMethod
-    public void startAVRecording(final ReadableMap option, final Promise promise) {
-        String path = option.getString("path");
-        Integer uid = option.getInt("uid");
-        String format = option.getString("format");
-        if (true == recording) {
-            promise.reject("-1", "recording already started");
-        }
-        SurfaceView view = AgoraManager.getInstance().getSurfaceView(uid);
-        if (null == view) {
-            promise.reject("-1", "recording already started");
-        }
-    }
-
-    // TODO: need implementation
-    @ReactMethod
-    public void stopAVRecording(final Promise promise) {
-        if (false == recording) {
-            promise.reject("-1", "recording didn't start");
-        } else {
-            promise.resolve(null);
-        }
-    }
+//    // TODO: need implementation
+//    @ReactMethod
+//    public void startAVRecording(final ReadableMap option, final Promise promise) {
+//        String path = option.getString("path");
+//        Integer uid = option.getInt("uid");
+//        String format = option.getString("format");
+//        if (true == recording) {
+//            promise.reject("-1", "recording already started");
+//        }
+//        SurfaceView view = AgoraManager.getInstance().getSurfaceView(uid);
+//        if (null == view) {
+//            promise.reject("-1", "recording already started");
+//        }
+//    }
+//
+//    // TODO: need implementation
+//    @ReactMethod
+//    public void stopAVRecording(final Promise promise) {
+//        if (false == recording) {
+//            promise.reject("-1", "recording didn't start");
+//        } else {
+//            promise.resolve(null);
+//        }
+//    }
 
     public LiveInjectStreamConfig.AudioSampleRateType getAudioSampleRateEnum (int val) {
         LiveInjectStreamConfig.AudioSampleRateType type = LiveInjectStreamConfig.AudioSampleRateType.TYPE_32000;
