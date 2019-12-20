@@ -6,6 +6,7 @@ import android.view.WindowManager;
 
 import java.lang.ref.WeakReference;
 
+import io.agora.rtc.gl.RendererCommon;
 import io.agora.rtc.mediaio.IVideoFrameConsumer;
 import io.agora.rtc.mediaio.MediaIO.PixelFormat;
 import io.agora.rtc.mediaio.TextureSource;
@@ -23,6 +24,10 @@ public class AgoraTextureCamera2 extends TextureSource {
 
     public void onTextureFrameAvailable(int oesTextureId, float[] transformMatrix, long timestampNs) {
         super.onTextureFrameAvailable(oesTextureId, transformMatrix, timestampNs);
+
+        if (mCameraHelper.isFrontFacing()) {
+            transformMatrix = RendererCommon.multiplyMatrices(transformMatrix, RendererCommon.horizontalFlipMatrix());
+        }
 
         WeakReference<IVideoFrameConsumer> consumerWeakRef = mConsumer;
         if (mStarted && consumerWeakRef != null) {

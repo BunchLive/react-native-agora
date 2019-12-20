@@ -14,8 +14,9 @@ import java.util.List;
 
 import androidx.annotation.RequiresApi;
 import io.agora.rtc.IRtcEngineEventHandler;
-import io.agora.rtc.RtcEngine;
 import io.agora.rtc.RtcEngineEx;
+import io.agora.rtc.mediaio.AgoraDefaultRender;
+import io.agora.rtc.mediaio.AgoraDefaultSource;
 import io.agora.rtc.mediaio.AgoraTextureView;
 
 import static io.agora.rtc.mediaio.MediaIO.BufferType.BYTE_ARRAY;
@@ -48,7 +49,6 @@ public class AgoraManager {
     private int mLocalUid = 0;
     private Context context;
     private final CompositeRtcEngineEventHandler mRtcEventHandler = new CompositeRtcEngineEventHandler();
-    private CameraHelper mCameraHelper;
     private boolean mLocalVideoStreamMuted = false;
 
     private AgoraManager(com.syan.agora.AgoraManager agoraManager) {
@@ -77,11 +77,12 @@ public class AgoraManager {
     }
 
     public boolean isUsingFrontCamera() {
-        return mCameraHelper.isFrontFacing();
+        //if (mCameraHelper != null) return mCameraHelper.isFrontFacing();
+        return true;
     }
 
     public int switchCamera() {
-        mCameraHelper.switchCamera();
+        //mCameraHelper.switchCamera();
         return 0;
     }
 
@@ -177,7 +178,34 @@ public class AgoraManager {
 
     // -- TextureView support
 
+    private View mLocalTextureView = null;
+
+    public View getLocalTextureView() {
+        return mLocalTextureView;
+    }
+
+    public void removeLocalTextureView() {
+        mLocalTextureView = null;
+    }
+
+    public int setupLocalTextureView() {
+        AgoraTextureCamera1 videoSource = new AgoraTextureCamera1(context, 640, 480);
+        AgoraTextureView renderer = new AgoraTextureView(context);
+        renderer.setMirror(true);
+        renderer.init(videoSource.getEglContext());
+        renderer.setBufferType(TEXTURE);
+        renderer.setPixelFormat(TEXTURE_OES);
+
+        mRtcEngine.setVideoSource(videoSource);
+        mRtcEngine.setLocalVideoRenderer(renderer);
+        mLocalTextureView = renderer;
+        return 0;
+    }
+
+    // --
+
     public void removeSurfaceView(int uid) {
+        mParent.removeSurfaceView(uid);
         mSurfaceViews.remove(uid);
     }
 
@@ -191,7 +219,7 @@ public class AgoraManager {
     }
 
     public View getLocalSurfaceView() {
-        return mSurfaceViews.get(mLocalUid);
+        return mParent.getLocalSurfaceView();
     }
 
     public View getSurfaceView(int uid) {
@@ -199,41 +227,9 @@ public class AgoraManager {
     }
 
     public int setupLocalVideo(Integer mode) {
-        return setupLocalVideo();
-    }
-
-    public int setupLocalVideo() {
-        if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper(context, new CameraHelper.CameraHelperDelegate() {
-                @RequiresApi (api = VERSION_CODES.LOLLIPOP)
-                @Override
-                public Size getTextureViewSize() {
-                    return new Size(480, 640);
-                }
-
-                @Override
-                public void setTextureViewTransform(final Matrix transform) {
-
-                }
-
-                @Override
-                public void onPreviewSizeChange(final Size size) {
-
-                }
-            });
-            mCameraHelper.setUseFrontCamera(true);
-        }
-
-        AgoraTextureCamera2 videoSource = new AgoraTextureCamera2(context, 480, 640, mCameraHelper);
-        AgoraTextureView renderer = new AgoraTextureView(context);
-        renderer.init(videoSource.getEglContext());
-        renderer.setBufferType(TEXTURE);
-        renderer.setPixelFormat(TEXTURE_OES);
-
-        mRtcEngine.setVideoSource(videoSource);
-        mRtcEngine.setLocalVideoRenderer(renderer);
-        mSurfaceViews.put(mLocalUid, renderer);
-        return 0;
+        mRtcEngine.setVideoSource(new AgoraDefaultSource());
+        mRtcEngine.setLocalVideoRenderer(new AgoraDefaultRender());
+        return mParent.setupLocalVideo(mode);
     }
 
     public int setupRemoteVideo(final int uid, Integer mode) {
