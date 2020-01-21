@@ -1,9 +1,6 @@
 package live.bunch.agora;
 
 import android.content.Context;
-import android.graphics.Matrix;
-import android.os.Build.VERSION_CODES;
-import android.util.Size;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -11,8 +8,9 @@ import com.facebook.react.bridge.ReadableMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import androidx.annotation.RequiresApi;
+import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngineEx;
 import io.agora.rtc.mediaio.AgoraDefaultRender;
@@ -167,42 +165,18 @@ public class AgoraManager {
                 return super.muteLocalVideoStream(muted);
             }
         };
+
+        mRtcEngine.registerMediaMetadataObserver(mRtcMetadataObserver, 0); // type VIDEO_METADATA(0)
         return r;
     }
 
     public int joinChannel(ReadableMap options) {
+        mMetadataQueue.clear(); // Remove any pending metadata before joining.
+
         int uid = options.hasKey("uid") ? options.getInt("uid") : 0;
         this.mLocalUid = uid;
         return mParent.joinChannel(options);
     }
-
-    // -- TextureView support
-
-    private View mLocalTextureView = null;
-
-    public View getLocalTextureView() {
-        return mLocalTextureView;
-    }
-
-    public void removeLocalTextureView() {
-        mLocalTextureView = null;
-    }
-
-    public int setupLocalTextureView() {
-        AgoraTextureCamera1 videoSource = new AgoraTextureCamera1(context, 640, 480);
-        AgoraTextureView renderer = new AgoraTextureView(context);
-        renderer.setMirror(true);
-        renderer.init(videoSource.getEglContext());
-        renderer.setBufferType(TEXTURE);
-        renderer.setPixelFormat(TEXTURE_OES);
-
-        mRtcEngine.setVideoSource(videoSource);
-        mRtcEngine.setLocalVideoRenderer(renderer);
-        mLocalTextureView = renderer;
-        return 0;
-    }
-
-    // --
 
     public void removeSurfaceView(int uid) {
         mParent.removeSurfaceView(uid);
@@ -246,4 +220,116 @@ public class AgoraManager {
         mSurfaceViews.put(uid, renderer);
         return 0;
     }
+
+    //region TextureView support
+
+    private View mLocalTextureView = null;
+
+    public View getLocalTextureView() {
+        return mLocalTextureView;
+    }
+
+    public void removeLocalTextureView() {
+        mLocalTextureView = null;
+    }
+
+    public int setupLocalTextureView() {
+        AgoraTextureCamera1 videoSource = new AgoraTextureCamera1(context, 640, 480);
+        AgoraTextureView renderer = new AgoraTextureView(context);
+        renderer.setMirror(true);
+        renderer.init(videoSource.getEglContext());
+        renderer.setBufferType(TEXTURE);
+        renderer.setPixelFormat(TEXTURE_OES);
+
+        mRtcEngine.setVideoSource(videoSource);
+        mRtcEngine.setLocalVideoRenderer(renderer);
+        mLocalTextureView = renderer;
+        return 0;
+    }
+
+    // endregion
+
+    //region Metadata support
+
+    public interface MetadataListener {
+        /**
+         * Called when the local user receives the metadata.
+         *
+         * @param buffer The received metadata. Use StringMetadataEncoder to decode it to a String.
+         * @param uid The ID of the user who sent the metadata.
+         * @param timeStampMs The timestamp (ms) of the received metadata.
+         */
+        void onMetadataReceived(byte[] buffer, int uid, long timeStampMs);
+    }
+
+    public static final int METADATA_MAX_LENGTH = 1024;
+
+    private ConcurrentLinkedQueue<byte[]> mMetadataQueue = new ConcurrentLinkedQueue<>();
+    private List<MetadataListener> mMetadataListeners = new ArrayList<>();
+    private IMetadataObserver mRtcMetadataObserver = new IMetadataObserver() {
+
+        @Override
+        public int getMaxMetadataSize() {
+            byte[] data = mMetadataQueue.peek();
+            if (data == null) return 0;
+
+            return data.length;
+        }
+
+        @Override
+        public byte[] onReadyToSendMetadata(long timeStampMs) {
+            byte[] data = mMetadataQueue.poll();
+            if (data == null) return new byte[0];
+
+            return data;
+        }
+
+        @Override
+        public void onMetadataReceived(final byte[] buffer, final int uid, final long timeStampMs) {
+            if (0 == buffer.length) return;
+
+            for (MetadataListener l : mMetadataListeners) {
+                l.onMetadataReceived(buffer, uid, timeStampMs);
+            }
+        }
+    };
+
+    /**
+     * Send metadata via RtcEngine.
+     * Use StringMetadataEncoder to encode String data.
+     *
+     * @param metadata byte[] data
+     * @return true if data has been queued for sending,
+     * false if data exceeds {@link #METADATA_MAX_LENGTH} and cannot be sent
+     */
+    public boolean sendMetadata(byte[] metadata) {
+        if (METADATA_MAX_LENGTH < metadata.length) {
+            return false;
+        }
+        mMetadataQueue.add(metadata);
+        return true;
+    }
+
+    /**
+     * Registers metadata listener
+     *
+     * @param listener {@link MetadataListener}
+     */
+    public void addMetadataListener(MetadataListener listener) {
+        if (mMetadataListeners.indexOf(listener) == -1) {
+            mMetadataListeners.add(listener);
+        }
+    }
+
+    /**
+     * Unregisters metadata listener.
+     *
+     * @param listener {@link MetadataListener}
+     */
+
+    public void removeMetadataListener(MetadataListener listener) {
+        mMetadataListeners.remove(listener);
+    }
+
+    //endregion
 }
