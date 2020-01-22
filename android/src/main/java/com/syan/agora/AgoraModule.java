@@ -718,7 +718,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                     WritableMap map = Arguments.createMap();
                     map.putInt("uid", uid);
                     map.putInt("state", state);
-                    map.putInt("uid", reason);
+                    map.putInt("reason", reason);
                     map.putInt("elapsed", elapsed);
                     sendEvent(getReactApplicationContext(), AGRemoteAudioStateChanged, map);
                 }
