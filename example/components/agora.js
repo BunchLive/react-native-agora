@@ -1,21 +1,21 @@
 // noinspection JSIgnoredPromiseFromCall
 
-import React, { Component, PureComponent } from "react";
+import React, {Component, PureComponent} from "react";
 import {
+  AppState,
+  Dimensions,
+  Image,
+  Modal,
+  NativeModules,
+  Platform,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
-  Image,
-  Dimensions,
-  Modal,
-  Platform,
-  NativeModules,
-  AppState
+  View
 } from "react-native";
 
-import { RtcEngine, AgoraView } from "react-native-agora";
-import { APPID, isIphoneX, isIphoneXR } from "../utils";
+import {AgoraView, RtcEngine} from "react-native-agora";
+import {APPID, isIphoneX, isIphoneXR} from "../utils";
 
 const { Agora } = NativeModules;
 if (!Agora) throw new Error("Agora load failed in react-native, please check ur compiler environments");
@@ -39,6 +39,7 @@ const EnablePhotoflash = () => require("../assets/enable_photoflash.png");
 const DisablePhotoflash = () => require("../assets/disable_photoflash.png");
 const IconMuted = () => require("../assets/icon_muted.png");
 const IconSpeaker = () => require("../assets/icon_speaker.png");
+const IconSoundEffect = () => require("../assets/icon_music_note_white.png");
 
 const { width, height } = Dimensions.get("window");
 
@@ -76,6 +77,10 @@ const styles = StyleSheet.create({
     height: (width - 40) / 3,
     margin: 5
   },
+  topView: {
+    flexDirection: "row",
+    justifyContent: "space-around"
+  },
   bottomView: {
     padding: 20,
     flexDirection: "row",
@@ -97,6 +102,33 @@ class OperateButton extends PureComponent {
       </TouchableOpacity>
     );
   }
+}
+
+const SoundEffects = {
+  Blop: {id: 1, name: "blop.mp3", filepath: "/assets/blop.mp3" },
+  Tick: {id: 2, name: "tick.mp3", filepath: "/assets/tick.mp3" },
+  Woosh: {id: 3, name: "woosh.mp3", filepath: "/assets/woosh.mp3" }
+};
+
+function preloadSoundEffects() {
+  if (Platform.OS === "android") {
+    Object.values(SoundEffects).forEach(effect => {
+      console.log("preloading sound effect ", effect);
+      RtcEngine.preloadEffect(effect.id, effect.filepath);
+    });
+  }
+}
+
+function playEffect(effect, publish = false) {
+  RtcEngine.playEffect({
+    soundid: effect.id,
+    filepath: effect.filepath,
+    loopcount: 0,
+    pitch: 1,
+    pan: 0.0,
+    gain: 100.0,
+    publish: publish
+  });
 }
 
 export default class AgoraComponent extends Component {
@@ -136,6 +168,7 @@ export default class AgoraComponent extends Component {
       console.log("[RtcEngine] onUserJoined", data);
       const { peerIds } = this.state;
       if (peerIds.indexOf(data.uid) === -1) {
+        playEffect(SoundEffects.Blop);
         this.setState({
           peerIds: [...peerIds, data.uid]
         });
@@ -143,6 +176,7 @@ export default class AgoraComponent extends Component {
     });
     RtcEngine.on("userOffline", data => {
       console.log("[RtcEngine] onUserOffline", data);
+      playEffect(SoundEffects.Woosh);
       this.setState({
         peerIds: this.state.peerIds.filter(uid => uid !== data.uid)
       });
@@ -171,6 +205,8 @@ export default class AgoraComponent extends Component {
     console.log("[CONFIG]", JSON.stringify(config));
     console.log("[CONFIG.encoderConfig", config.videoEncoderConfig);
     RtcEngine.init(config);
+
+    preloadSoundEffects();
   }
 
   componentDidMount() {
@@ -204,7 +240,9 @@ export default class AgoraComponent extends Component {
   };
 
   switchCamera = () => {
-    RtcEngine.switchCamera();
+    //RtcEngine.switchCamera();
+    RtcEngine.setEffectsVolume(100);
+    playEffect(SoundEffects.Tick);
   };
 
   toggleAllRemoteAudioStreams = () => {
@@ -320,6 +358,41 @@ export default class AgoraComponent extends Component {
     }
   };
 
+  soundEffectsView = () => {
+    const { hideButton } = this.state;
+    if (!hideButton) {
+      return (
+          <View style={{
+            position: 'absolute',
+            top: safeTop(0),
+            right: 0,
+            justifyContent: "space-between",
+            flexDirection: 'column',
+            backgroundColor: "rgba(0,0,0,0.32)",
+          }}>
+            <OperateButton
+                onPress={() => playEffect(SoundEffects.Tick, true)}
+                style={{margin: 10, padding: 5}}
+                imgStyle={{ width: 30, height: 30 }}
+                source={IconSoundEffect()}
+            />
+            <OperateButton
+                onPress={() => playEffect(SoundEffects.Blop, true)}
+                style={{margin: 10, padding: 5}}
+                imgStyle={{ width: 30, height: 30 }}
+                source={IconSoundEffect()}
+            />
+            <OperateButton
+                onPress={() => playEffect(SoundEffects.Woosh, true)}
+                style={{margin: 10, padding: 5}}
+                imgStyle={{ width: 30, height: 30 }}
+                source={IconSoundEffect()}
+            />
+          </View>
+      )
+    }
+  };
+
   agoraPeerViews = ({ visible, peerIds }) => {
     return visible ? (
       <View style={styles.videoView} />
@@ -418,6 +491,7 @@ export default class AgoraComponent extends Component {
             {this.state.peerIds.length}
           </Text>
           {this.agoraPeerViews(this.state)}
+          {this.soundEffectsView()}
           {this.buttonsView(this.state)}
         </View>
         {this.modalView(this.state)}
