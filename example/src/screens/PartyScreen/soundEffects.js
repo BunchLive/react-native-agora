@@ -27,3 +27,13 @@ export function playEffect(effect, publish = false) {
         publish: publish
     });
 }
+
+export function mixInEffect(effect) {
+    RtcEngine.stopAudioMixing();
+    RtcEngine.startAudioMixing({
+        filepath: effect.filepath,
+        loopback: false,
+        replace: false,
+        cycle: 1
+    });
+}

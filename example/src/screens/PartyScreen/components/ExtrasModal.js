@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 
 import SectionListModal from "../../../components/SectionListModal";
-import {playEffect, SoundEffects} from "../soundEffects";
+import {mixInEffect, playEffect, SoundEffects} from "../soundEffects";
 import {sendSignalSoundEffect, signalSoundEffect} from "../metadataSignals";
+import {Music} from "../music";
 
 export default class ExtrasModal extends Component {
     render() {
@@ -40,6 +41,27 @@ export default class ExtrasModal extends Component {
                         title: 'Trigger "Woosh"',
                     },
                 ]
+            },
+            {
+                title: "Mix music",
+                data: [
+                    {
+                        id: 'music-play',
+                        title: 'Play',
+                    },
+                    {
+                        id: 'music-pause',
+                        title: 'Pause',
+                    },
+                    {
+                        id: 'music-resume',
+                        title: 'Resume',
+                    },
+                    {
+                        id: 'music-stop',
+                        title: 'Stop',
+                    },
+                ]
             }
         ];
 
@@ -71,6 +93,19 @@ export default class ExtrasModal extends Component {
                         case 'signal-sound-woosh':
                             sendSignalSoundEffect(SoundEffects.Woosh);
                             playEffect(SoundEffects.Woosh, false);
+                            break;
+
+                        case 'music-play':
+                            Music.play();
+                            break;
+                        case 'music-pause':
+                            Music.pause();
+                            break;
+                        case 'music-resume':
+                            Music.resume();
+                            break;
+                        case 'music-stop':
+                            Music.stop();
                             break;
                     }
                 }}
