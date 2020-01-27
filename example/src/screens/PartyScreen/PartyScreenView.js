@@ -17,6 +17,7 @@ import {AgoraView, RtcEngine} from 'react-native-agora';
 import {APPID, isIphoneX, isIphoneXR} from '../../utils';
 import ExtrasModal from './components/ExtrasModal';
 import {playEffect} from "./soundEffects";
+import {Signals} from "./metadataSignals";
 
 const {Agora} = NativeModules;
 if (!Agora)
@@ -200,7 +201,7 @@ export default class PartyScreenView extends Component {
       try {
         const data = metadata.data;
         const signal = JSON.parse(data);
-        if (signal && signal.command === "play-sound") {
+        if (signal && signal.signal === Signals.PlaySound) {
           playEffect(signal.payload, false);
         }
       } catch (e) {

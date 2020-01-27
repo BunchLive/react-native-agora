@@ -1,23 +1,14 @@
 import React, {Component} from 'react';
-import {RtcEngine} from 'react-native-agora';
 
 import SectionListModal from "../../../components/SectionListModal";
-import { playEffect, SoundEffects } from "../soundEffects";
-
-function signalSoundEffect(soundEffect) {
-    const data = JSON.stringify({
-        command: "play-sound",
-        payload: soundEffect
-    });
-    console.log("sendMediaData", data);
-    RtcEngine.sendMediaData(data);
-}
+import {playEffect, SoundEffects} from "../soundEffects";
+import {sendSignalSoundEffect, signalSoundEffect} from "../metadataSignals";
 
 export default class ExtrasModal extends Component {
     render() {
         const DATA = [
             {
-                title: "Play Sound effects + publish",
+                title: "Play Sound effect and publish",
                 data: [
                     {
                         id: 'play-sound-blop',
@@ -34,7 +25,7 @@ export default class ExtrasModal extends Component {
                 ]
             },
             {
-                title: "Signal sound effect  local",
+                title: "Signal sound effect and play",
                 data: [
                     {
                         id: 'signal-sound-blop',
@@ -70,15 +61,15 @@ export default class ExtrasModal extends Component {
                             break;
 
                         case 'signal-sound-blop':
-                            signalSoundEffect(SoundEffects.Blop);
+                            sendSignalSoundEffect(SoundEffects.Blop);
                             playEffect(SoundEffects.Blop, false);
                             break;
                         case 'signal-sound-tick':
-                            signalSoundEffect(SoundEffects.Tick);
+                            sendSignalSoundEffect(SoundEffects.Tick);
                             playEffect(SoundEffects.Tick, false);
                             break;
                         case 'signal-sound-woosh':
-                            signalSoundEffect(SoundEffects.Woosh);
+                            sendSignalSoundEffect(SoundEffects.Woosh);
                             playEffect(SoundEffects.Woosh, false);
                             break;
                     }
