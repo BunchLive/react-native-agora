@@ -1,4 +1,4 @@
-import { APP_ID } from "./agora_app_id.json";
+import { APP_ID } from "../../agora_app_id.json";
 
 export const APPID = APP_ID;
 
