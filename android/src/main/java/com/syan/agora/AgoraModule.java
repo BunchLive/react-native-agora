@@ -24,7 +24,6 @@ import java.util.Map;
 
 import io.agora.rtc.Constants;
 import io.agora.rtc.IAudioEffectManager;
-import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.internal.LastmileProbeConfig;
@@ -38,6 +37,7 @@ import io.agora.rtc.video.ChannelMediaInfo;
 import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoEncoderConfiguration;
 import live.bunch.agora.AgoraManager;
+import live.bunch.agora.StringMetadataEncoder;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import static com.syan.agora.AgoraConst.AGActiveSpeaker;
@@ -2135,27 +2135,60 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         }
     }
 
+    //region BUNCH - Metadata support
+
+    private StringMetadataEncoder metadataEncoder = new StringMetadataEncoder();
+
+    private AgoraManager.MetadataListener metadataListener = new AgoraManager.MetadataListener() {
+        @Override
+        public void onMetadataReceived(byte[] buffer, int uid, long timeStampMs) {
+            WritableMap map = Arguments.createMap();
+            map.putString("data", metadataEncoder.decode(buffer));
+            map.putString("uid", Integer.toString(uid));
+            map.putString("ts", Long.toString(timeStampMs));
+            sendEvent(getReactApplicationContext(), AgoraConst.AGMediaMetaDataReceived, map);
+        }
+    };
+
     @ReactMethod
     public void sendMediaData(String data, final Promise promise) {
-        if (null == mediaObserver) {
-            promise.reject("-1", "-1");
-        } else {
-            mediaObserver.setMetadata(data.getBytes(Charset.forName("UTF-8")));
+        if (AgoraManager.getInstance().sendMetadata(metadataEncoder.encode(data))) {
             promise.resolve(null);
+        } else {
+            promise.reject("-1", "Failed to send metadata. Data exceeds max size (1024 bytes).");
         }
     }
 
     @ReactMethod
-    public void registerMediaMetadataObserver(final Promise promise) {
-        mediaObserver = new MediaObserver(getReactApplicationContext());
-        Integer res = AgoraManager.getInstance().mRtcEngine
-                .registerMediaMetadataObserver(mediaObserver, IMetadataObserver.VIDEO_METADATA);
-        if (res == 0) {
-            promise.resolve(null);
-        } else {
-            promise.reject("-1", res.toString());
-        }
+    public void registerMediaMetadataObserver() {
+        AgoraManager.getInstance().addMetadataListener(metadataListener);
     }
+
+    // -- original - Metadata support that lacks queueing capabilities
+
+//    @ReactMethod
+//    public void sendMediaData(String data, final Promise promise) {
+//        if (null == mediaObserver) {
+//            promise.reject("-1", "-1");
+//        } else {
+//            mediaObserver.setMetadata(data.getBytes(Charset.forName("UTF-8")));
+//            promise.resolve(null);
+//        }
+//    }
+//
+//    @ReactMethod
+//    public void registerMediaMetadataObserver(final Promise promise) {
+//        mediaObserver = new MediaObserver(getReactApplicationContext());
+//        Integer res = AgoraManager.getInstance().mRtcEngine
+//                .registerMediaMetadataObserver(mediaObserver, IMetadataObserver.VIDEO_METADATA);
+//        if (res == 0) {
+//            promise.resolve(null);
+//        } else {
+//            promise.reject("-1", res.toString());
+//        }
+//    }
+
+    //endregion
 
     private static boolean recording = false;
 
