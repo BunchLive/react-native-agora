@@ -148,7 +148,10 @@ public class AgoraManager {
      * initialize rtc engine
      */
     public int init(Context context, IRtcEngineEventHandler rtcEventHandler, ReadableMap options) {
-        if (rtcEventHandler != null) mRtcEventHandler.add(rtcEventHandler);
+        if (rtcEventHandler != null) {
+            mRtcEventHandler.remove(rtcEventHandler);
+            mRtcEventHandler.add(rtcEventHandler);
+        }
 
         this.context = context;
 
@@ -176,6 +179,11 @@ public class AgoraManager {
         int uid = options.hasKey("uid") ? options.getInt("uid") : 0;
         this.mLocalUid = uid;
         return mParent.joinChannel(options);
+    }
+
+    public int joinChannelWithUserAccount(String token, String channelName, String userAccount) {
+        mMetadataQueue.clear(); // Remove any pending metadata before joining.
+        return mRtcEngine.joinChannelWithUserAccount(token, channelName, userAccount);
     }
 
     public void removeSurfaceView(int uid) {

@@ -201,7 +201,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     private static final String AgoraAudioMode = "AudioMode";
     private static final String AgoraVideoMode = "VideoMode";
 
-    private RtcEngine rtcEngine;
     private String appId;
 
     public AgoraModule(ReactApplicationContext context) {
@@ -1164,7 +1163,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     public void init(ReadableMap options) {
         AgoraManager.getInstance().init(getReactApplicationContext(), mRtcEventHandler, options);
         appId = options.getString("appid");
-        rtcEngine = AgoraManager.getInstance().mRtcEngine;
     }
 
     @ReactMethod
@@ -1224,7 +1222,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void registerLocalUserAccount(ReadableMap options, Promise promise) {
-        Integer res = rtcEngine.registerLocalUserAccount(appId, options.getString("userAccount"));
+        Integer res = AgoraManager.getInstance().mRtcEngine.registerLocalUserAccount(appId, options.getString("userAccount"));
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1239,7 +1237,8 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             token = options.getString("token");
         }
         String channelName = options.getString("channelName");
-        Integer res = rtcEngine.joinChannelWithUserAccount(token, options.getString("channelName"), options.getString("userAccount"));
+        String userAccount = options.getString("userAccount");
+        Integer res = AgoraManager.getInstance().joinChannelWithUserAccount(token, channelName, userAccount);
         if (res == 0) {
             this.channelName = channelName;
             promise.resolve(null);
@@ -1251,7 +1250,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUserInfoByUid(Integer uid, Promise promise) {
         UserInfo info = new UserInfo();
-        Integer res = rtcEngine.getUserInfoByUid(uid, info);
+        Integer res = AgoraManager.getInstance().mRtcEngine.getUserInfoByUid(uid, info);
         if (res == 0) {
             WritableMap map = Arguments.createMap();
             map.putInt("uid", info.uid);
@@ -1265,7 +1264,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUserInfoByUserAccount(String userAccount, Promise promise) {
         UserInfo info = new UserInfo();
-        Integer res = rtcEngine.getUserInfoByUserAccount(userAccount, info);
+        Integer res = AgoraManager.getInstance().mRtcEngine.getUserInfoByUserAccount(userAccount, info);
         if (res == 0) {
             WritableMap map = Arguments.createMap();
             map.putInt("uid", info.uid);
