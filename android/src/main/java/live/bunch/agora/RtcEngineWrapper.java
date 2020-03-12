@@ -7,6 +7,7 @@ import io.agora.rtc.IAudioFrameObserver;
 import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
+import io.agora.rtc.RtcChannel;
 import io.agora.rtc.RtcEngineEx;
 import io.agora.rtc.internal.LastmileProbeConfig;
 import io.agora.rtc.live.LiveInjectStreamConfig;
@@ -21,6 +22,7 @@ import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoCanvas;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import io.agora.rtc.video.WatermarkOptions;
 
 public class RtcEngineWrapper extends RtcEngineEx {
 
@@ -189,8 +191,8 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.adjustPlaybackSignalVolume(volume);
     }
 
-    public int enableAudioVolumeIndication(int interval, int smooth) {
-        return mRtcEngine.enableAudioVolumeIndication(interval, smooth);
+    public int enableAudioVolumeIndication(int interval, int smooth, boolean report_vad) {
+        return mRtcEngine.enableAudioVolumeIndication(interval, smooth, report_vad);
     }
 
     public int enableAudioQualityIndication(boolean enabled) {
@@ -677,5 +679,36 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.updateChannelMediaRelay(channelMediaRelayConfiguration);
     }
 
+    public RtcChannel createRtcChannel(String channel) {
+        return mRtcEngine.createRtcChannel(channel);
+    }
+
+    public int startDumpVideoReceiveTrack(int uid, String dumpFile) {
+        return mRtcEngine.startDumpVideoReceiveTrack(uid, dumpFile);
+    }
+
+    public int stopDumpVideoReceiveTrack() {
+        return mRtcEngine.stopDumpVideoReceiveTrack();
+    }
+
+    public int addVideoWatermark (String watermarkUrl, WatermarkOptions options) {
+        return mRtcEngine.addVideoWatermark(watermarkUrl, options);
+    }
+
+    public int startAudioRecording (String filePath, int sampleRate, int quality)  {
+        return mRtcEngine.startAudioRecording(filePath, sampleRate, quality);
+    }
+
+    public int setRemoteRenderMode (int uid, int renderMode, int mirrorMode) {
+        return mRtcEngine.setRemoteRenderMode(uid, renderMode, mirrorMode);
+    }
+
+    public int setLocalRenderMode (int renderMode, int mirrorMode) {
+        return mRtcEngine.setLocalRenderMode(renderMode, mirrorMode);
+    }
+
+    public int adjustUserPlaybackSignalVolume (int uid, int volume) {
+        return mRtcEngine.adjustUserPlaybackSignalVolume(uid, volume);
+    }
     //endregion
 }
