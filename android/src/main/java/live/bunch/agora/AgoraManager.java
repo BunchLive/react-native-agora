@@ -82,8 +82,7 @@ public class AgoraManager {
     }
 
     public int switchCamera() {
-        //mCameraHelper.switchCamera();
-        return 0;
+        return mParent.mRtcEngine.switchCamera();
     }
 
     // --
