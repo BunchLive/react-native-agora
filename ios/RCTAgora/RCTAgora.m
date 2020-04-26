@@ -422,12 +422,27 @@ RCT_EXPORT_METHOD(registerLocalUserAccount:(NSDictionary *)options
 RCT_EXPORT_METHOD(joinChannelWithUserAccount:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject) {
-  NSString *token = [options objectForKey:@"token"] != nil ? options[@"token"] : nil;
-  NSInteger res = [self.rtcEngine joinChannelByUserAccount:options[@"userAccount"] token:token channelId:options[@"channelName"] joinSuccess:nil];
-  if (res == 0) {
-    resolve(nil);
+  if (![NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self mainThreadJoinChannelWithUserAccount:options resolve:resolve reject:reject];
+    });
   } else {
-    reject(@(-1).stringValue, @(res).stringValue, nil);
+    [self mainThreadJoinChannelWithUserAccount:options resolve:resolve reject:reject];
+  }
+}
+
+- (void)mainThreadJoinChannelWithUserAccount:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+  @try {
+    NSString *token = [options objectForKey:@"token"] != nil ? options[@"token"] : nil;
+    NSInteger res = [self.rtcEngine joinChannelByUserAccount:options[@"userAccount"] token:token channelId:options[@"channelName"] joinSuccess:nil];
+    if (res == 0) {
+      resolve(nil);
+    } else {
+      reject(@(-1).stringValue, @(res).stringValue, nil);
+    }
+  }
+  @catch ( NSException *e ) {
+    reject(@(-1).stringValue, e.description, nil);
   }
 }
 
