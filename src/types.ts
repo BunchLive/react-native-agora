@@ -83,8 +83,8 @@ export interface Option {
   appid: String,
   channelProfile: number,
   videoEncoderConfig: VideoEncoderConfig,
-  dualStream: boolean,
-  mode: number,
+  dualStream?: boolean,
+  mode?: number,
   clientRole: number,
   audioProfile: number,
   audioScenario: number,
@@ -222,6 +222,7 @@ export interface VideoOption {
 
 export interface AudioRecordingOption {
   filepath: String,
+  sampleRate: number,
   quality: number
 }
 
@@ -276,11 +277,19 @@ export interface MixedAudioFrameOption {
 }
 
 export interface ImageOption {
-  url: String,
-  height: number,
-  width: number,
-  x: number,
-  y: number
+  visibleInPreview: boolean
+  positionInPortraitMode: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  }
+  positionInLandscapeMode: {
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  }
 }
 
 export interface VideoStreamOption {
@@ -361,4 +370,5 @@ export interface LastmileProbeConfig {
  */
 export interface CameraCapturerConfiguration {
   preference: number
+  cameraDirection: number
 }
