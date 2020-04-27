@@ -1170,7 +1170,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     public void init(ReadableMap options) {
         AgoraManager.getInstance().init(getReactApplicationContext(), mRtcEventHandler, options);
         appId = options.getString("appid");
-        rtcEngine = AgoraManager.getInstance().mRtcEngine;
+        RtcEngineEx rtcEngine = AgoraManager.getInstance().mRtcEngine;
         setAppType((RtcEngineEx) rtcEngine);
     }
 
