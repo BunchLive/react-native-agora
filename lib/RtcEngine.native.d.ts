@@ -467,6 +467,7 @@ declare class RtcEngine {
      * This method enables audio volume by interval and smooth
      * @param interval
      * @param smooth
+     * @param vad (default: false) Enable the voice activity detection of the local user. Once it is enabled, the vad parameter of the onAudioVolumeIndication callback reports the voice activity status of the local user.
      * @return Promise<any>
      */
     static enableAudioVolumeIndication(interval: number, smooth: number, vad: boolean): Promise<any>;

@@ -1,7 +1,11 @@
 package live.bunch.example.agora;
 
 import android.app.Application;
+import android.util.Log;
 
+import com.facebook.debug.debugoverlay.model.DebugOverlayTag;
+import com.facebook.debug.holder.Printer;
+import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -41,6 +45,24 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG_JS) {
+            PrinterHolder.setPrinter(new Printer() {
+                @Override
+                public void logMessage(final DebugOverlayTag tag, final String message, final Object... args) {
+                    Log.d(tag.name, String.format(message, args));
+                }
+
+                @Override
+                public void logMessage(final DebugOverlayTag tag, final String message) {
+                    Log.d(tag.name, message);
+                }
+
+                @Override
+                public boolean shouldDisplayLogMessage(final DebugOverlayTag tag) {
+                    return true;
+                }
+            });
+        }
         SoLoader.init(this, /* native exopackage */ false);
     }
 }

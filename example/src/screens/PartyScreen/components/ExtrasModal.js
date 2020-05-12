@@ -4,10 +4,20 @@ import SectionListModal from "../../../components/SectionListModal";
 import {mixInEffect, playEffect, SoundEffects} from "../soundEffects";
 import {sendSignalSoundEffect, signalSoundEffect} from "../metadataSignals";
 import {Music} from "../music";
+import {RtcEngine} from 'react-native-agora';
 
 export default class ExtrasModal extends Component {
     render() {
         const DATA = [
+            {
+              title: "Video",
+              data: [
+                  {
+                      id: 'switch-camera',
+                      title: 'Switch camera'
+                  }
+              ]
+            },
             {
                 title: "Play Sound effect and publish",
                 data: [
@@ -72,6 +82,10 @@ export default class ExtrasModal extends Component {
                 data={DATA}
                 onSelectItem={item => {
                     switch (item.id) {
+                        case 'switch-camera':
+                            RtcEngine.switchCamera();
+                            break;
+                        
                         case 'play-sound-blop':
                             playEffect(SoundEffects.Blop, true);
                             break;

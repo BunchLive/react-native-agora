@@ -222,7 +222,7 @@ export default class PartyScreenView extends Component {
     console.log('[joinChannel] ' + this.props.channelName);
     RtcEngine.joinChannel(this.props.channelName, this.props.uid);
     RtcEngine.muteLocalAudioStream(this.state.isMute);
-    RtcEngine.enableAudioVolumeIndication(500, 10);
+    RtcEngine.enableAudioVolumeIndication(500, 10, false);
     RtcEngine.registerMediaMetadataObserver();
 
     AppState.addEventListener('change', nextAppState => {
