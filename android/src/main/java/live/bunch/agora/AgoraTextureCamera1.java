@@ -26,8 +26,8 @@ import io.agora.rtc.mediaio.TextureSource;
 public class AgoraTextureCamera1 extends TextureSource {
     private static final String TAG = io.agora.rtc.mediaio.AgoraTextureCamera.class.getSimpleName();
     private Context mContext;
-    private Camera camera;
-    private CameraInfo info;
+    private Camera mCamera;
+    private CameraInfo mInfo;
     private boolean mStarted = false;
 
     public AgoraTextureCamera1(Context context, int width, int height) {
@@ -38,7 +38,7 @@ public class AgoraTextureCamera1 extends TextureSource {
     public void onTextureFrameAvailable(int oesTextureId, float[] transformMatrix, long timestampNs) {
         super.onTextureFrameAvailable(oesTextureId, transformMatrix, timestampNs);
         int rotation = this.getFrameOrientation();
-        if (this.info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+        if (this.mInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
             transformMatrix = RendererCommon.multiplyMatrices(transformMatrix, RendererCommon.horizontalFlipMatrix());
         }
 
@@ -52,30 +52,30 @@ public class AgoraTextureCamera1 extends TextureSource {
     }
 
     public boolean isFrontFacing() {
-        return this.info != null && this.info.facing == CameraInfo.CAMERA_FACING_FRONT;
+        return this.mInfo != null && this.mInfo.facing == CameraInfo.CAMERA_FACING_FRONT;
     }
 
     protected boolean onCapturerOpened() {
         try {
             this.openCamera();
-            this.camera.setPreviewTexture(this.getSurfaceTexture());
-            this.camera.startPreview();
+            this.mCamera.setPreviewTexture(this.getSurfaceTexture());
+            this.mCamera.startPreview();
             return true;
-        } catch (IOException e) {
-            Log.e(TAG, "initialize: failed to initalize camera device");
+        } catch (RuntimeException|IOException e) {
+            Log.e(TAG, "initialize: failed to initialize camera device\n" + e.getMessage());
             return false;
         }
     }
 
     protected boolean onCapturerStarted() {
         mStarted = true;
-        this.camera.startPreview();
+        this.mCamera.startPreview();
         return true;
     }
 
     protected void onCapturerStopped() {
         mStarted = false;
-        this.camera.stopPreview();
+        this.mCamera.stopPreview();
     }
 
     protected void onCapturerClosed() {
@@ -83,29 +83,29 @@ public class AgoraTextureCamera1 extends TextureSource {
     }
 
     private void openCamera() {
-        if (this.camera != null) {
+        if (this.mCamera != null) {
             throw new RuntimeException("camera already initialized");
         } else {
-            this.info = new CameraInfo();
+            this.mInfo = new CameraInfo();
             int numCameras = Camera.getNumberOfCameras();
 
             for(int i = 0; i < numCameras; ++i) {
-                Camera.getCameraInfo(i, this.info);
-                if (this.info.facing == CameraInfo.CAMERA_FACING_FRONT) {
-                    this.camera = Camera.open(i);
+                Camera.getCameraInfo(i, this.mInfo);
+                if (this.mInfo.facing == CameraInfo.CAMERA_FACING_FRONT) {
+                    this.mCamera = Camera.open(i);
                     break;
                 }
             }
 
-            if (this.camera == null) {
+            if (this.mCamera == null) {
                 Log.d(TAG, "No front-facing camera found; opening default");
-                this.camera = Camera.open();
+                this.mCamera = Camera.open();
             }
 
-            if (this.camera == null) {
+            if (this.mCamera == null) {
                 throw new RuntimeException("Unable to open camera");
             } else {
-                Parameters parms = this.camera.getParameters();
+                Parameters parms = this.mCamera.getParameters();
 
                 // IMPORTANT!! Setting to high PreviewFpsRange will disable auto exposure and auto white balance.
 
@@ -115,7 +115,7 @@ public class AgoraTextureCamera1 extends TextureSource {
                 if (parms.isAutoExposureLockSupported()) parms.setAutoExposureLock(false);
                 if (parms.isAutoWhiteBalanceLockSupported()) parms.setAutoWhiteBalanceLock(false);
 
-                this.camera.setParameters(parms);
+                this.mCamera.setParameters(parms);
                 parms.setFocusMode(Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 
                 Size cameraPreviewSize = parms.getPreviewSize();
@@ -148,27 +148,26 @@ public class AgoraTextureCamera1 extends TextureSource {
 
     private int getFrameOrientation() {
         int rotation = this.getDeviceOrientation();
-        if (this.info.facing == CameraInfo.CAMERA_FACING_BACK) {
+        if (this.mInfo.facing == CameraInfo.CAMERA_FACING_BACK) {
             rotation = 360 - rotation;
         }
 
-        return (this.info.orientation + rotation) % 360;
+        return (this.mInfo.orientation + rotation) % 360;
     }
 
     private void releaseCamera() {
-        if (this.camera != null) {
-            this.camera.stopPreview();
+        if (this.mCamera != null) {
+            this.mCamera.stopPreview();
 
             try {
-                this.camera.setPreviewTexture(null);
+                this.mCamera.setPreviewTexture(null);
             } catch (Exception e) {
                 Log.e(TAG, "failed to set Preview Texture");
             }
 
-            this.camera.release();
-            this.camera = null;
+            this.mCamera.release();
+            this.mCamera = null;
             Log.d(TAG, "releaseCamera -- done");
         }
-
     }
 }
