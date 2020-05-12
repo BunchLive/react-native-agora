@@ -39,9 +39,9 @@ public class AgoraManager {
 
     // --
 
-    public RtcEngineEx mRtcEngine;
+    public RtcEngineEx mRtcEngine = new NullRtcEngineEx();
 
-    private com.syan.agora.AgoraManager mParent;
+    private final com.syan.agora.AgoraManager mParent;
     private SparseArray<View> mSurfaceViews;
 
     private int mLocalUid = 0;
@@ -63,7 +63,7 @@ public class AgoraManager {
     }
 
     public boolean isInitialized() {
-        return mRtcEngine != null;
+        return mRtcEngine != null && !(mRtcEngine instanceof NullRtcEngineEx);
     }
 
     public boolean isLocalAudioStreamMuted() {
@@ -80,7 +80,10 @@ public class AgoraManager {
     }
 
     public int switchCamera() {
-        return mParent.mRtcEngine.switchCamera();
+        if (mParent.mRtcEngine != null) {
+            return mParent.mRtcEngine.switchCamera();
+        }
+        return -1;
     }
 
     // --

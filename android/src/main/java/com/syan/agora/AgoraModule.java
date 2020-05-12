@@ -1,9 +1,5 @@
 package com.syan.agora;
 
-import android.graphics.Rect;
-
-import androidx.annotation.Nullable;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
@@ -17,11 +13,14 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import android.graphics.Rect;
+
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
 import io.agora.rtc.Constants;
 import io.agora.rtc.IAudioEffectManager;
 import io.agora.rtc.IRtcEngineEventHandler;
@@ -37,9 +36,9 @@ import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.ChannelMediaInfo;
 import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoEncoderConfiguration;
+import io.agora.rtc.video.WatermarkOptions;
 import live.bunch.agora.AgoraManager;
 import live.bunch.agora.StringMetadataEncoder;
-import io.agora.rtc.video.WatermarkOptions;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import static com.syan.agora.AgoraConst.AGActiveSpeaker;
@@ -1168,16 +1167,15 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void init(ReadableMap options) {
-        AgoraManager.getInstance().init(getReactApplicationContext(), mRtcEventHandler, options);
+        agoraManager().init(getReactApplicationContext(), mRtcEventHandler, options);
         appId = options.getString("appid");
-        RtcEngineEx rtcEngine = AgoraManager.getInstance().mRtcEngine;
-        setAppType((RtcEngineEx) rtcEngine);
+        setAppType(rtcEngine());
     }
 
     @ReactMethod
     public void renewToken(String token,
                            Promise promise) {
-        Integer res = AgoraManager.getInstance().renewToken(token);
+        Integer res = agoraManager().renewToken(token);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1187,7 +1185,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableWebSdkInteroperability(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().enableWebSdkInteroperability(enabled);
+        Integer res = agoraManager().enableWebSdkInteroperability(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1197,7 +1195,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getConnectionState(Promise promise) {
-        Integer res = AgoraManager.getInstance().getConnectionState();
+        Integer res = agoraManager().getConnectionState();
         if (res == 0) {
             promise.resolve(null);
         } else  {
@@ -1207,7 +1205,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setClientRole(int role, Promise promise) {
-        Integer res = AgoraManager.getInstance().setClientRole(role);
+        Integer res = agoraManager().setClientRole(role);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1219,7 +1217,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void joinChannel(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().joinChannel(options);
+        Integer res = agoraManager().joinChannel(options);
         if (res == 0) {
             String channelName = options.getString("channelName");
             this.channelName = channelName;
@@ -1231,7 +1229,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void registerLocalUserAccount(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.registerLocalUserAccount(appId, options.getString("userAccount"));
+        Integer res = rtcEngine().registerLocalUserAccount(appId, options.getString("userAccount"));
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1247,7 +1245,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         }
         String channelName = options.getString("channelName");
         String userAccount = options.getString("userAccount");
-        Integer res = AgoraManager.getInstance().joinChannelWithUserAccount(token, channelName, userAccount);
+        Integer res = agoraManager().joinChannelWithUserAccount(token, channelName, userAccount);
         if (res == 0) {
             this.channelName = channelName;
             promise.resolve(null);
@@ -1259,7 +1257,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUserInfoByUid(Integer uid, Promise promise) {
         UserInfo info = new UserInfo();
-        Integer res = AgoraManager.getInstance().mRtcEngine.getUserInfoByUid(uid, info);
+        Integer res = rtcEngine().getUserInfoByUid(uid, info);
         if (res == 0) {
             WritableMap map = Arguments.createMap();
             map.putInt("uid", info.uid);
@@ -1273,7 +1271,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getUserInfoByUserAccount(String userAccount, Promise promise) {
         UserInfo info = new UserInfo();
-        Integer res = AgoraManager.getInstance().mRtcEngine.getUserInfoByUserAccount(userAccount, info);
+        Integer res = rtcEngine().getUserInfoByUserAccount(userAccount, info);
         if (res == 0) {
             WritableMap map = Arguments.createMap();
             map.putInt("uid", info.uid);
@@ -1294,7 +1292,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         if (options.hasKey("channelName")) {
             channel = options.getString("channelName");
         }
-        Integer res = AgoraManager.getInstance().mRtcEngine.switchChannel(token, channel);
+        Integer res = rtcEngine().switchChannel(token, channel);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1304,7 +1302,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void leaveChannel(Promise promise) {
-        Integer res = AgoraManager.getInstance().leaveChannel();
+        Integer res = agoraManager().leaveChannel();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1347,7 +1345,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             }
             config.setDestChannelInfo(channelName, new ChannelMediaInfo(channelName, token, uid));
         }
-        Integer res = AgoraManager.getInstance().mRtcEngine.startChannelMediaRelay(config);
+        Integer res = rtcEngine().startChannelMediaRelay(config);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1376,7 +1374,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                 config.removeDestChannelInfo(channelName);
             }
         }
-        Integer res = AgoraManager.getInstance().mRtcEngine.updateChannelMediaRelay(config);
+        Integer res = rtcEngine().updateChannelMediaRelay(config);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1414,7 +1412,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             }
             config.setDestChannelInfo(src.channelName, new ChannelMediaInfo(channelName, token, uid));
         }
-        Integer res = AgoraManager.getInstance().mRtcEngine.updateChannelMediaRelay(config);
+        Integer res = rtcEngine().updateChannelMediaRelay(config);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1424,7 +1422,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopChannelMediaRelay(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.stopChannelMediaRelay();
+        Integer res = rtcEngine().stopChannelMediaRelay();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1434,7 +1432,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startPreview(Promise promise) {
-        Integer res = AgoraManager.getInstance().startPreview();
+        Integer res = agoraManager().startPreview();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1444,7 +1442,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopPreview(Promise promise) {
-        Integer res = AgoraManager.getInstance().stopPreview();
+        Integer res = agoraManager().stopPreview();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1454,7 +1452,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setEnableSpeakerphone(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().setEnableSpeakerphone(enabled);
+        Integer res = agoraManager().setEnableSpeakerphone(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1464,7 +1462,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setDefaultAudioRouteToSpeakerphone(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().setDefaultAudioRouteToSpeakerphone(enabled);
+        Integer res = agoraManager().setDefaultAudioRouteToSpeakerphone(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1474,7 +1472,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableVideo(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableVideo();
+        Integer res = rtcEngine().enableVideo();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1484,7 +1482,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void disableVideo(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.disableVideo();
+        Integer res = rtcEngine().disableVideo();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1494,7 +1492,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableLocalVideo(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableLocalVideo(enabled);
+        Integer res = rtcEngine().enableLocalVideo(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1504,7 +1502,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteLocalVideoStream(boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteLocalVideoStream(muted);
+        Integer res = rtcEngine().muteLocalVideoStream(muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1514,7 +1512,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteAllRemoteVideoStreams(boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteAllRemoteVideoStreams(muted);
+        Integer res = rtcEngine().muteAllRemoteVideoStreams(muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1524,7 +1522,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteRemoteVideoStream(int uid, boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteRemoteVideoStream(uid, muted);
+        Integer res = rtcEngine().muteRemoteVideoStream(uid, muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1533,7 +1531,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     }
     @ReactMethod
     public void setDefaultMuteAllRemoteVideoStreams(boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setDefaultMuteAllRemoteVideoStreams(muted);
+        Integer res = rtcEngine().setDefaultMuteAllRemoteVideoStreams(muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1543,7 +1541,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void switchCamera(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.switchCamera();
+        Integer res = rtcEngine().switchCamera();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1555,19 +1553,19 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     public void getCameraInfo(Promise promise) {
         WritableMap map = Arguments.createMap();
         WritableMap supportMap = Arguments.createMap();
-        supportMap.putBoolean("zoom", AgoraManager.getInstance().mRtcEngine.isCameraZoomSupported());
-        supportMap.putBoolean("torch", AgoraManager.getInstance().mRtcEngine.isCameraTorchSupported());
-        supportMap.putBoolean("focusPositionInPreview", AgoraManager.getInstance().mRtcEngine.isCameraTorchSupported());
-        supportMap.putBoolean("exposurePosition", AgoraManager.getInstance().mRtcEngine.isCameraTorchSupported());
-        supportMap.putBoolean("autoFocusFaceMode", AgoraManager.getInstance().mRtcEngine.isCameraAutoFocusFaceModeSupported());
-//        supportMap.putDouble("maxZoomFactor", AgoraManager.getInstance().mRtcEngine.getCameraMaxZoomFactor());
+        supportMap.putBoolean("zoom", rtcEngine().isCameraZoomSupported());
+        supportMap.putBoolean("torch", rtcEngine().isCameraTorchSupported());
+        supportMap.putBoolean("focusPositionInPreview", rtcEngine().isCameraTorchSupported());
+        supportMap.putBoolean("exposurePosition", rtcEngine().isCameraTorchSupported());
+        supportMap.putBoolean("autoFocusFaceMode", rtcEngine().isCameraAutoFocusFaceModeSupported());
+//        supportMap.putDouble("maxZoomFactor", rtcEngine().getCameraMaxZoomFactor());
         map.putMap("support", supportMap);
         promise.resolve(map);
     }
 
     @ReactMethod
     public void setCameraZoomFactor(float factor, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraZoomFactor(factor);
+        Integer res = rtcEngine().setCameraZoomFactor(factor);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1577,7 +1575,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCameraFocusPositionInPreview(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraFocusPositionInPreview(
+        Integer res = rtcEngine().setCameraFocusPositionInPreview(
                 (float)options.getDouble("x"),
                 (float)options.getDouble("y")
         );
@@ -1590,7 +1588,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCameraExposurePosition(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraExposurePosition(
+        Integer res = rtcEngine().setCameraExposurePosition(
                 (float)options.getDouble("x"),
                 (float)options.getDouble("y")
         );
@@ -1603,7 +1601,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCameraTorchOn(boolean isOn, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraTorchOn(isOn);
+        Integer res = rtcEngine().setCameraTorchOn(isOn);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1613,7 +1611,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCameraAutoFocusFaceModeEnabled(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraAutoFocusFaceModeEnabled(enabled);
+        Integer res = rtcEngine().setCameraAutoFocusFaceModeEnabled(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1623,7 +1621,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getCallId(Promise promise) {
-        String res = AgoraManager.getInstance().mRtcEngine.getCallId();
+        String res = rtcEngine().getCallId();
         WritableMap map = Arguments.createMap();
         map.putString("id", res);
         promise.resolve(map);
@@ -1631,17 +1629,17 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLog(String filePath, int level, int size, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLogFileSize(size);
+        Integer res = rtcEngine().setLogFileSize(size);
         if (res < 0) {
             promise.reject("-1", res.toString());
             return;
         }
-        res = AgoraManager.getInstance().mRtcEngine.setLogFilter(level);
+        res = rtcEngine().setLogFilter(level);
         if (res < 0) {
             promise.reject("-1", res.toString());
             return;
         }
-        res = AgoraManager.getInstance().mRtcEngine.setLogFile(filePath);
+        res = rtcEngine().setLogFile(filePath);
         if (res < 0) {
             promise.reject("-1", res.toString());
             return;
@@ -1652,7 +1650,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableAudio(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableAudio();
+        Integer res = rtcEngine().enableAudio();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1662,7 +1660,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void disableAudio(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.disableAudio();
+        Integer res = rtcEngine().disableAudio();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1672,7 +1670,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteAllRemoteAudioStreams(boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteAllRemoteAudioStreams(muted);
+        Integer res = rtcEngine().muteAllRemoteAudioStreams(muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1682,7 +1680,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteRemoteAudioStream(int uid, boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteRemoteAudioStream(uid, muted);
+        Integer res = rtcEngine().muteRemoteAudioStream(uid, muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1692,7 +1690,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setDefaultMuteAllRemoteAudioStreams(boolean muted, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setDefaultMuteAllRemoteAudioStreams(muted);
+        Integer res = rtcEngine().setDefaultMuteAllRemoteAudioStreams(muted);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1702,7 +1700,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void adjustRecordingSignalVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.adjustRecordingSignalVolume(volume);
+        Integer res = rtcEngine().adjustRecordingSignalVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1712,7 +1710,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void adjustPlaybackSignalVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.adjustPlaybackSignalVolume(volume);
+        Integer res = rtcEngine().adjustPlaybackSignalVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1722,7 +1720,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableAudioVolumeIndication(int interval, int smooth, boolean vad, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableAudioVolumeIndication(interval, smooth, vad);
+        Integer res = rtcEngine().enableAudioVolumeIndication(interval, smooth, vad);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1732,7 +1730,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableLocalAudio(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableLocalAudio(enabled);
+        Integer res = rtcEngine().enableLocalAudio(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1742,7 +1740,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void muteLocalAudioStream(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.muteLocalAudioStream(enabled);
+        Integer res = rtcEngine().muteLocalAudioStream(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1752,7 +1750,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void createDataStream(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .createDataStream(
                         options.getBoolean("ordered"),
                         options.getBoolean("reliable")
@@ -1767,13 +1765,13 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void isSpeakerphoneEnabled(Callback callback) {
         WritableMap map = Arguments.createMap();
-        map.putBoolean("status", AgoraManager.getInstance().mRtcEngine.isSpeakerphoneEnabled());
+        map.putBoolean("status", rtcEngine().isSpeakerphoneEnabled());
         callback.invoke(map);
     }
 
     @ReactMethod
     public void enableInEarMonitoring(boolean enabled, Promise promise) {
-        Integer res  = AgoraManager.getInstance().mRtcEngine.enableInEarMonitoring(enabled);
+        Integer res  = rtcEngine().enableInEarMonitoring(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1783,7 +1781,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setInEarMonitoringVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setInEarMonitoringVolume(volume);
+        Integer res = rtcEngine().setInEarMonitoringVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1793,7 +1791,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVoicePitch(double pitch, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVoicePitch(pitch);
+        Integer res = rtcEngine().setLocalVoicePitch(pitch);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1803,7 +1801,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVoiceEqualization(int band, int gain, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVoiceEqualization(band, gain);
+        Integer res = rtcEngine().setLocalVoiceEqualization(band, gain);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1813,7 +1811,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVoiceReverb(int reverb, int value, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVoiceReverb(reverb, value);
+        Integer res = rtcEngine().setLocalVoiceReverb(reverb, value);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1823,7 +1821,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startAudioMixing(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.startAudioMixing(
+        Integer res = rtcEngine().startAudioMixing(
                 options.getString("filepath"),
                 options.getBoolean("loopback"),
                 options.getBoolean("replace"),
@@ -1838,7 +1836,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopAudioMixing(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.stopAudioMixing();
+        Integer res = rtcEngine().stopAudioMixing();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1848,7 +1846,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void pauseAudioMixing(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.pauseAudioMixing();
+        Integer res = rtcEngine().pauseAudioMixing();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1858,7 +1856,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void resumeAudioMixing(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.resumeAudioMixing();
+        Integer res = rtcEngine().resumeAudioMixing();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1868,7 +1866,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void adjustAudioMixingVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.adjustAudioMixingVolume(volume);
+        Integer res = rtcEngine().adjustAudioMixingVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1878,7 +1876,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void adjustAudioMixingPlayoutVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.adjustAudioMixingPlayoutVolume(volume);
+        Integer res = rtcEngine().adjustAudioMixingPlayoutVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1888,7 +1886,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void adjustAudioMixingPublishVolume(int volume, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.adjustAudioMixingPublishVolume(volume);
+        Integer res = rtcEngine().adjustAudioMixingPublishVolume(volume);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1898,7 +1896,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getAudioMixingPlayoutVolume(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.getAudioMixingPlayoutVolume();
+        Integer res = rtcEngine().getAudioMixingPlayoutVolume();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1908,7 +1906,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getAudioMixingPublishVolume(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.getAudioMixingPlayoutVolume();
+        Integer res = rtcEngine().getAudioMixingPlayoutVolume();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1918,7 +1916,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getAudioMixingDuration(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.getAudioMixingDuration();
+        Integer res = rtcEngine().getAudioMixingDuration();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1928,7 +1926,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getAudioMixingCurrentPosition(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.getAudioMixingCurrentPosition();
+        Integer res = rtcEngine().getAudioMixingCurrentPosition();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1938,7 +1936,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setAudioMixingPosition(int pos, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setAudioMixingPosition(pos);
+        Integer res = rtcEngine().setAudioMixingPosition(pos);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1948,7 +1946,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startAudioRecording(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .startAudioRecording(
                         options.getString("filepath"),
                         options.getInt("sampleRate"),
@@ -1963,7 +1961,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopAudioRecording(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .stopAudioRecording();
         if (res == 0) {
             promise.resolve(null);
@@ -1974,7 +1972,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopEchoTest(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .stopEchoTest();
         if (res == 0) {
             promise.resolve(null);
@@ -1985,7 +1983,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableLastmileTest(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .enableLastmileTest();
         if (res == 0) {
             promise.resolve(null);
@@ -1996,7 +1994,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void disableLastmileTest(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .disableLastmileTest();
         if (res == 0) {
             promise.resolve(null);
@@ -2007,7 +2005,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRecordingAudioFrameParameters(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setRecordingAudioFrameParameters(
                         options.getInt("sampleRate"),
                         options.getInt("channel"),
@@ -2023,7 +2021,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setPlaybackAudioFrameParameters(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setPlaybackAudioFrameParameters(
                         options.getInt("sampleRate"),
                         options.getInt("channel"),
@@ -2039,7 +2037,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setMixedAudioFrameParameters(WritableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setMixedAudioFrameParameters(
                         options.getInt("sampleRate"),
                         options.getInt("samplesPerCall")
@@ -2083,7 +2081,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         watermarkOpts.positionInLandscapeMode = landscapePosition;
         watermarkOpts.visibleInPreview = watermarkOptions.getBoolean("visibleInPreview");
         watermarkOpts.positionInPortraitMode = portraitPosition;
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .addVideoWatermark(url, watermarkOpts);
         if (res == 0) {
             promise.resolve(null);
@@ -2094,7 +2092,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void clearVideoWatermarks(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .clearVideoWatermarks();
         if (res == 0) {
             promise.resolve(null);
@@ -2105,7 +2103,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalPublishFallbackOption(int option, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setLocalPublishFallbackOption(option);
         if (res == 0) {
             promise.resolve(null);
@@ -2116,7 +2114,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRemoteSubscribeFallbackOption(int option, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setRemoteSubscribeFallbackOption(option);
         if (res == 0) {
             promise.resolve(null);
@@ -2127,7 +2125,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableDualStreamMode(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .enableDualStreamMode(enabled);
         if (res == 0) {
             promise.resolve(null);
@@ -2139,7 +2137,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRemoteVideoStreamType(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setRemoteVideoStreamType(
                         options.getInt("uid"),
                         options.getInt("streamType")
@@ -2153,7 +2151,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRemoteDefaultVideoStreamType(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .setRemoteDefaultVideoStreamType(
                         options.getInt("streamType")
                 );
@@ -2181,7 +2179,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void sendMediaData(String data, final Promise promise) {
-        if (AgoraManager.getInstance().sendMetadata(metadataEncoder.encode(data))) {
+        if (agoraManager().sendMetadata(metadataEncoder.encode(data))) {
             promise.resolve(null);
         } else {
             promise.reject("-1", "Failed to send metadata. Data exceeds max size (1024 bytes).");
@@ -2190,7 +2188,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void registerMediaMetadataObserver() {
-        AgoraManager.getInstance().addMetadataListener(metadataListener);
+        agoraManager().addMetadataListener(metadataListener);
     }
 
     // -- original - Metadata support that lacks queueing capabilities
@@ -2208,7 +2206,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 //    @ReactMethod
 //    public void registerMediaMetadataObserver(final Promise promise) {
 //        mediaObserver = new MediaObserver(getReactApplicationContext());
-//        Integer res = AgoraManager.getInstance().mRtcEngine
+//        Integer res = rtcEngine()
 //                .registerMediaMetadataObserver(mediaObserver, IMetadataObserver.VIDEO_METADATA);
 //        if (res == 0) {
 //            promise.resolve(null);
@@ -2230,7 +2228,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 //        if (true == recording) {
 //            promise.reject("-1", "recording already started");
 //        }
-//        SurfaceView view = AgoraManager.getInstance().getSurfaceView(uid);
+//        SurfaceView view = agoraManager().getSurfaceView(uid);
 //        if (null == view) {
 //            promise.reject("-1", "recording already started");
 //        }
@@ -2324,7 +2322,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         injectstream.audioSampleRate = getAudioSampleRateEnum(config.getInt("audioSampleRate"));
         injectstream.audioChannels = config.getInt("audioChannels");
 
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .addInjectStreamUrl(
                         options.getString("url"),
                         injectstream
@@ -2338,7 +2336,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void removeInjectStreamUrl(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .removeInjectStreamUrl(options.getString("url"));
         if (res == 0) {
             promise.resolve(null);
@@ -2349,7 +2347,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addPublishStreamUrl(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .addPublishStreamUrl(
                         options.getString("url"),
                         options.getBoolean("enable")
@@ -2363,7 +2361,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void removePublishStreamUrl(ReadableMap options, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine
+        Integer res = rtcEngine()
                 .removePublishStreamUrl(options.getString("url"));
         if (res == 0) {
             promise.resolve(null);
@@ -2448,7 +2446,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         if (options.hasKey("transcodingExtraInfo")) {
             transcoding.userConfigExtraInfo = options.getString("transcodingExtraInfo");
         }
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLiveTranscoding(transcoding);
+        Integer res = rtcEngine().setLiveTranscoding(transcoding);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2458,7 +2456,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getEffectsVolume(Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Double res = manager.getEffectsVolume();
         if (res < 0) {
             promise.reject("-1", res.toString());
@@ -2471,7 +2469,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setEffectsVolume(double volume, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.setEffectsVolume(volume);
         if (res == 0) {
             promise.resolve(null);
@@ -2483,7 +2481,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setVolumeOfEffect(int soundId, double volume, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.setVolumeOfEffect(soundId, volume);
         if (res == 0) {
             promise.resolve(null);
@@ -2494,7 +2492,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void playEffect(ReadableMap options, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.playEffect(
                 options.getInt("soundid"),
                 options.getString("filepath"),
@@ -2514,7 +2512,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopEffect(int soundId, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.stopEffect(soundId);
         if (res == 0) {
             promise.resolve(null);
@@ -2525,7 +2523,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopAllEffects(Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.stopAllEffects();
         if (res == 0) {
             promise.resolve(null);
@@ -2536,7 +2534,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void preloadEffect(int soundId, String filePath, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.preloadEffect(soundId, filePath);
         if (res == 0) {
             promise.resolve(null);
@@ -2547,7 +2545,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void unloadEffect(int soundId, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.unloadEffect(soundId);
         if (res == 0) {
             promise.resolve(null);
@@ -2558,7 +2556,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void pauseEffect(int soundId, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.pauseEffect(soundId);
         if (res == 0) {
             promise.resolve(null);
@@ -2569,7 +2567,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void pauseAllEffects(Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.pauseAllEffects();
         if (res == 0) {
             promise.resolve(null);
@@ -2580,7 +2578,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void resumeEffect(int soundId, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.resumeEffect(soundId);
         if (res == 0) {
             promise.resolve(null);
@@ -2591,7 +2589,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void resumeAllEffects(int soundId, Promise promise) {
-        IAudioEffectManager manager = AgoraManager.getInstance().mRtcEngine.getAudioEffectManager();
+        IAudioEffectManager manager = rtcEngine().getAudioEffectManager();
         Integer res = manager.resumeAllEffects();
         if (res == 0) {
             promise.resolve(null);
@@ -2603,7 +2601,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     // set local video render mode
     @ReactMethod
     public void setLocalRenderMode(int mode, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalRenderMode(mode);
+        Integer res = rtcEngine().setLocalRenderMode(mode);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2614,7 +2612,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     // set remote video render mode
     @ReactMethod
     public void setRemoteRenderMode(int uid, int mode, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setRemoteRenderMode(uid, mode);
+        Integer res = rtcEngine().setRemoteRenderMode(uid, mode);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2625,7 +2623,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void getSdkVersion(Promise promise) {
         try {
-            String res = AgoraManager.getInstance().mRtcEngine.getSdkVersion();
+            String res = rtcEngine().getSdkVersion();
             promise.resolve(res);
         } catch (Exception e) {
             promise.reject(e);
@@ -2634,7 +2632,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVideoMirrorMode(int mode, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVideoMirrorMode(mode);
+        Integer res = rtcEngine().setLocalVideoMirrorMode(mode);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2649,7 +2647,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         beautyOption.lighteningLevel = (float) options.getDouble("lighteningLevel");
         beautyOption.smoothnessLevel = (float) options.getDouble("smoothnessLevel");
         beautyOption.rednessLevel = (float) options.getDouble("rednessLevel");
-        Integer res = AgoraManager.getInstance().mRtcEngine.setBeautyEffectOptions(enabled, beautyOption);
+        Integer res = rtcEngine().setBeautyEffectOptions(enabled, beautyOption);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2659,7 +2657,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVoiceChanger(int voiceChanger, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVoiceChanger(voiceChanger);
+        Integer res = rtcEngine().setLocalVoiceChanger(voiceChanger);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2669,7 +2667,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setLocalVoiceReverbPreset(int preset, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setLocalVoiceReverbPreset(preset);
+        Integer res = rtcEngine().setLocalVoiceReverbPreset(preset);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2679,7 +2677,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableSoundPositionIndication(boolean enabled, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableSoundPositionIndication(enabled);
+        Integer res = rtcEngine().enableSoundPositionIndication(enabled);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2689,7 +2687,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRemoteVoicePosition(int uid, int pan, int gain, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setRemoteVoicePosition(uid, pan, gain);
+        Integer res = rtcEngine().setRemoteVoicePosition(uid, pan, gain);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2704,7 +2702,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         probeConfig.probeDownlink = config.getBoolean("probeDownlink");
         probeConfig.expectedDownlinkBitrate = config.getInt("expectedDownlinkBitrate");
         probeConfig.expectedUplinkBitrate = config.getInt("expectedUplinkBitrate");
-        Integer res = AgoraManager.getInstance().mRtcEngine.startLastmileProbeTest(probeConfig);
+        Integer res = rtcEngine().startLastmileProbeTest(probeConfig);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2714,7 +2712,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void stopLastmileProbeTest(Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.stopLastmileProbeTest();
+        Integer res = rtcEngine().stopLastmileProbeTest();
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2724,7 +2722,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setRemoteUserPriority(int uid, int userPrority, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setRemoteUserPriority(uid, userPrority);
+        Integer res = rtcEngine().setRemoteUserPriority(uid, userPrority);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2734,7 +2732,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void startEchoTestWithInterval(int interval, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.startEchoTest(interval);
+        Integer res = rtcEngine().startEchoTest(interval);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2771,7 +2769,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             }
         }
         CameraCapturerConfiguration config = new CameraCapturerConfiguration(preference, cameraDirection);
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraCapturerConfiguration(config);
+        Integer res = rtcEngine().setCameraCapturerConfiguration(config);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2781,7 +2779,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setParameters(String paramStr, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.setParameters(paramStr);
+        Integer res = rtcEngine().setParameters(paramStr);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -2791,13 +2789,13 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getParameter(String paramStr, String args, Promise promise) {
-        String res = AgoraManager.getInstance().mRtcEngine.getParameter(paramStr, args);
+        String res = rtcEngine().getParameter(paramStr, args);
         promise.resolve(res);
     }
 
     @ReactMethod
     public void getParameters(String str, Promise promise) {
-        String res = AgoraManager.getInstance().mRtcEngine.getParameters(str);
+        String res = rtcEngine().getParameters(str);
         promise.resolve(res);
     }
 
@@ -2809,5 +2807,13 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         reactContext
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(agoraEvtName.toString(), params);
+    }
+    
+    private AgoraManager agoraManager() {
+        return AgoraManager.getInstance();
+    }
+    
+    private RtcEngineEx rtcEngine() {
+        return agoraManager().mRtcEngine;
     }
 }
