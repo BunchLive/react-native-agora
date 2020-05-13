@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import android.graphics.Rect;
@@ -1195,12 +1196,9 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getConnectionState(Promise promise) {
-        Integer res = agoraManager().getConnectionState();
-        if (res == 0) {
-            promise.resolve(null);
-        } else  {
-            promise.reject("-1", res.toString());
-        }
+        WritableMap response = Arguments.createMap();
+        response.putInt("state", agoraManager().getConnectionState());
+        promise.resolve(response);
     }
 
     @ReactMethod
