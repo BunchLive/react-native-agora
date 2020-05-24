@@ -329,19 +329,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
     private IRtcEngineEventHandler mRtcEventHandler = new IRtcEngineEventHandler() {
 
         @Override
-        public void onWarning(final int code) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "AgoraWarning");
-                    map.putInt("errorCode", code);
-                    sendEvent(getReactApplicationContext(), AGWarning, map);
-                }
-            });
-        }
-
-        @Override
         public void onError(final int code) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -354,6 +341,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             });
         }
 
+/*
         @Override
         public void onApiCallExecuted(final int code, final String api, final String result) {
             runOnUiThread(new Runnable() {
@@ -371,6 +359,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                 }
             });
         }
+ */
 
         @Override
         public void onJoinChannelSuccess(final String channel, final int uid, final int elapsed) {
@@ -429,19 +418,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                     WritableMap map = Arguments.createMap();
                     map.putMap("stats", statsMap);
                     sendEvent(getReactApplicationContext(), AGLeaveChannel, map);
-                }
-            });
-        }
-
-        @Override
-        public void onClientRoleChanged(final int oldRole, final int newRole) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("oldRole", oldRole);
-                    map.putInt("newRole", newRole);
-                    sendEvent(getReactApplicationContext(), AGClientRoleChanged, map);
                 }
             });
         }
@@ -528,30 +504,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         }
 
         @Override
-        public void onTokenPrivilegeWillExpire(final String token) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("token", token);
-                    sendEvent(getReactApplicationContext(), AGTokenPrivilegeWillExpire, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRequestToken() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "RequestToken");
-                    sendEvent(getReactApplicationContext(), AGRequestToken, map);
-                }
-            });
-        }
-
-        @Override
         public void onAudioVolumeIndication(final AudioVolumeInfo [] speakers, final int totalVolume) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -575,43 +527,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         }
 
         @Override
-        public void onActiveSpeaker(final int uid) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    sendEvent(getReactApplicationContext(), AGActiveSpeaker, map);
-                }
-            });
-        }
-
-        @Override
-        public void onFirstLocalAudioFrame(final int elapsed) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("elapsed", elapsed);
-                    sendEvent(getReactApplicationContext(), AGFirstLocalAudioFrame, map);
-                }
-            });
-        }
-
-        @Override
-        public void onFirstRemoteAudioFrame(final int uid, final int elapsed) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("elapsed", elapsed);
-                    sendEvent(getReactApplicationContext(), AGFirstRemoteAudioFrame, map);
-                }
-            });
-        }
-
-        @Override
         public void onFirstLocalVideoFrame(final int width, final int height, final int elapsed) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -625,88 +540,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             });
         }
 
-        @Override
-        public void onFirstRemoteVideoFrame(final int uid, final int width, final int height, final int elapsed) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("width", width);
-                    map.putInt("height", height);
-                    map.putInt("elapsed", elapsed);
-                    sendEvent(getReactApplicationContext(), AGFirstRemoteVideoFrame, map);
-                }
-            });
-        }
 
-        @Override
-        public void onUserMuteAudio(final int uid, final boolean muted) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("muted", muted);
-                    map.putInt("uid", uid);
-                    sendEvent(getReactApplicationContext(), AGUserMuteAudio, map);
-                }
-            });
-        }
-
-        @Override
-        public void onVideoSizeChanged(final int uid, final int width, final int height, final int rotation) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("width", width);
-                    map.putInt("height", height);
-                    map.putInt("rotation", rotation);
-                    sendEvent(getReactApplicationContext(), AGVideoSizeChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRtmpStreamingStateChanged(final String url, final int state, final int errCode) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("url", url);
-                    map.putInt("state", state);
-                    map.putInt("errorCode", errCode);
-                    sendEvent(getReactApplicationContext(), AGRtmpStreamingStateChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onNetworkTypeChanged(final int type) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("type", type);
-                    sendEvent(getReactApplicationContext(), AGNetworkTypeChanged, map);
-                }
-            });
-        }
-
-
-        @Override
-        public void onLocalAudioStateChanged(final int state, final int errCode) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("state", state);
-                    map.putInt("errorCode", errCode);
-                    sendEvent(getReactApplicationContext(), AGLocalAudioStateChanged, map);
-                }
-            });
-        }
         @Override
         public void onRemoteAudioStateChanged(final int uid,
                                               final int state,
@@ -721,19 +555,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                     map.putInt("reason", reason);
                     map.putInt("elapsed", elapsed);
                     sendEvent(getReactApplicationContext(), AGRemoteAudioStateChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onFirstRemoteAudioDecoded(final int uid, final int elapsed) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("elapsed", elapsed);
-                    sendEvent(getReactApplicationContext(), AGFirstRemoteAudioDecoded, map);
                 }
             });
         }
@@ -757,145 +578,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         }
 
         @Override
-        public void onLocalPublishFallbackToAudioOnly(final boolean isFallbackOrRecover) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("isFallbackOrRecover", isFallbackOrRecover);
-                    sendEvent(getReactApplicationContext(), AGLocalPublishFallbackToAudioOnly, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRemoteSubscribeFallbackToAudioOnly(final int uid, final boolean isFallbackOrRecover) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putBoolean("isFallbackOrRecover", isFallbackOrRecover);
-                    map.putInt("uid", uid);
-                    sendEvent(getReactApplicationContext(), AGRemoteSubscribeFallbackToAudioOnly, map);
-                }
-            });
-        }
-
-        @Override
-        public void onAudioRouteChanged(final int routing) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("routing", routing);
-                    sendEvent(getReactApplicationContext(), AGAudioRouteChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onCameraFocusAreaChanged(final Rect rect) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap rectMap = Arguments.createMap();
-                    rectMap.putInt("top", rect.top);
-                    rectMap.putInt("right", rect.right);
-                    rectMap.putInt("bottom", rect.bottom);
-                    rectMap.putInt("left", rect.left);
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("rect", rectMap);
-                    sendEvent(getReactApplicationContext(), AGCameraFocusAreaChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onCameraExposureAreaChanged(final Rect rect) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap rectMap = Arguments.createMap();
-                    rectMap.putInt("top", rect.top);
-                    rectMap.putInt("right", rect.right);
-                    rectMap.putInt("bottom", rect.bottom);
-                    rectMap.putInt("left", rect.left);
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("rect", rectMap);
-                    sendEvent(getReactApplicationContext(), AGCameraExposureAreaChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRemoteAudioStats(final RemoteAudioStats stats) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap statsMap = Arguments.createMap();
-                    statsMap.putInt("uid", stats.uid);
-                    statsMap.putInt("quality", stats.quality);
-                    statsMap.putInt("networkTransportDelay", stats.networkTransportDelay);
-                    statsMap.putInt("jitterBufferDelay", stats.jitterBufferDelay);
-                    statsMap.putInt("audioLossRate", stats.audioLossRate);
-                    statsMap.putInt("totalFrozenTime", stats.totalFrozenTime);
-                    statsMap.putInt("frozenRate", stats.frozenRate);
-                    statsMap.putInt("numChannels", stats.numChannels);
-                    statsMap.putInt("receivedSampleRate", stats.receivedSampleRate);
-                    statsMap.putInt("receivedBitrate", stats.receivedBitrate);
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("stats", statsMap);
-                    sendEvent(getReactApplicationContext(), AGRemoteAudioStats, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRtcStats(final RtcStats stats) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap statsMap = Arguments.createMap();
-                    statsMap.putInt("duration", stats.totalDuration);
-                    statsMap.putInt("txBytes", stats.txBytes);
-                    statsMap.putInt("rxBytes", stats.rxBytes);
-                    statsMap.putInt("txAudioBytes", stats.txAudioBytes);
-                    statsMap.putInt("txVideoBytes", stats.txVideoBytes);
-                    statsMap.putInt("rxAudioBytes", stats.rxAudioBytes);
-                    statsMap.putInt("rxVideoBytes", stats.rxVideoBytes);
-                    statsMap.putInt("txKBitRate", stats.txKBitRate);
-                    statsMap.putInt("rxKBitRate", stats.rxKBitRate);
-                    statsMap.putInt("rxVideoKBitRate", stats.rxVideoKBitRate);
-                    statsMap.putInt("rxAudioKBitRate", stats.rxAudioKBitRate);
-                    statsMap.putInt("txVideoKBitRate", stats.txVideoKBitRate);
-                    statsMap.putInt("rxVideoKBitRate", stats.rxVideoKBitRate);
-                    statsMap.putInt("lastmileDelay", stats.lastmileDelay);
-                    statsMap.putInt("userCount", stats.users);
-                    statsMap.putDouble("cpuAppUsage", stats.cpuAppUsage);
-                    statsMap.putDouble("cpuTotalUsage", stats.cpuTotalUsage);
-                    statsMap.putInt("txPacketLossRate", stats.txPacketLossRate);
-                    statsMap.putInt("rxPacketLossRate", stats.rxPacketLossRate);
-
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("stats", statsMap);
-                    sendEvent(getReactApplicationContext(), AGRtcStats, map);
-                }
-            });
-        }
-
-        @Override
-        public void onLastmileQuality(final int quality) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("quality", quality);
-                    sendEvent(getReactApplicationContext(), AGLastmileQuality, map);
-                }
-            });
-        }
-
-        @Override
         public void onNetworkQuality(final int uid, final int txQuality, final int rxQuality) {
             runOnUiThread(new Runnable() {
                 @Override
@@ -909,257 +591,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
             });
         }
 
-
-        @Override
-        public void onLocalVideoStats(final LocalVideoStats stats) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap statsMap = Arguments.createMap();
-                    statsMap.putInt("sentBitrate", stats.sentBitrate);
-                    statsMap.putInt("sentFrameRate", stats.sentFrameRate);
-                    statsMap.putInt("encoderOutputFrameRate", stats.encoderOutputFrameRate);
-                    statsMap.putInt("rendererOutputFrameRate", stats.rendererOutputFrameRate);
-                    statsMap.putInt("targetBitrate", stats.targetBitrate);
-                    statsMap.putInt("targetFrameRate", stats.targetFrameRate);
-                    statsMap.putInt("qualityAdaptIndication", stats.qualityAdaptIndication);
-                    statsMap.putInt("encodedBitrate", stats.encodedBitrate);
-                    statsMap.putInt("encodedFrameWidth", stats.encodedFrameWidth);
-                    statsMap.putInt("encodedFrameHeight", stats.encodedFrameHeight);
-                    statsMap.putInt("encodedFrameCount", stats.encodedFrameCount);
-                    statsMap.putInt("codecType", stats.codecType);
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("stats", statsMap);
-                    sendEvent(getReactApplicationContext(), AGLocalVideoStats, map);
-                }
-            });
-        }
-
-        @Override
-        public void onRemoteVideoStats(final RemoteVideoStats stats) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap statsMap = Arguments.createMap();
-                    statsMap.putInt("uid", stats.uid);
-                    statsMap.putInt("width", stats.width);
-                    statsMap.putInt("height", stats.height);
-                    statsMap.putInt("receivedBitrate", stats.receivedBitrate);
-                    statsMap.putInt("decoderOutputFrameRate", stats.decoderOutputFrameRate);
-                    statsMap.putInt("rendererOutputFrameRate", stats.rendererOutputFrameRate);
-                    statsMap.putInt("packetLossRate", stats.packetLossRate);
-                    statsMap.putInt("rxStreamType", stats.rxStreamType);
-                    statsMap.putInt("totalFrozenTime", stats.totalFrozenTime);
-                    statsMap.putInt("frozenRate", stats.frozenRate);
-                    WritableMap map = Arguments.createMap();
-                    map.putMap("stats", statsMap);
-                    sendEvent(getReactApplicationContext(), AGRemoteVideoStats, map);
-                }
-            });
-        }
-
-        @Override
-        public void onAudioMixingStateChanged(final int state, final int errorCode) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("state", state);
-                    map.putInt("errorCode", errorCode);
-                    sendEvent(getReactApplicationContext(), AGAudioMixingStateChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onAudioEffectFinished(final int soundId) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("soundid", soundId);
-                    sendEvent(getReactApplicationContext(), AGAudioEffectFinish, map);
-                }
-            });
-        }
-
-        @Override
-        public void onStreamPublished(final String url, final int errorCode) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("url", url);
-                    map.putInt("errorCode", errorCode);
-                    sendEvent(getReactApplicationContext(), AGStreamPublished, map);
-                }
-            });
-        }
-
-        @Override
-        public void onStreamUnpublished(final String url) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("url", url);
-                    sendEvent(getReactApplicationContext(), AGStreamUnpublish, map);
-                }
-            });
-        }
-
-        @Override
-        public void onTranscodingUpdated() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "AGTranscodingUpdate");
-                    sendEvent(getReactApplicationContext(), AGTranscodingUpdate, map);
-                }
-            });
-        }
-
-        @Override
-        public void onStreamInjectedStatus(final String url, final int uid, final int status) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putString("url", url);
-                    map.putInt("status", status);
-                    sendEvent(getReactApplicationContext(), AGStreamInjectedStatus, map);
-                }
-            });
-        }
-
-        /**
-         * onStreamMessage
-         */
-        @Override
-        public void onStreamMessage(final int uid, final int streamId, final byte[] data) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    String msg = new String(data, Charset.forName("UTF-8"));
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("streamId", streamId);
-                    map.putString("data", msg);
-                    sendEvent(getReactApplicationContext(), AGReceiveStreamMessage, map);
-                }
-            });
-        }
-
-        @Override
-        public void onStreamMessageError(final int uid, final int streamId, final int error, final int missed, final int cached) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("uid", uid);
-                    map.putInt("streamId", streamId);
-                    map.putInt("errorCode", error);
-                    map.putInt("missed", missed);
-                    map.putInt("cached", cached);
-                    sendEvent(getReactApplicationContext(), AGOccurStreamMessageError, map);
-                }
-            });
-        }
-
-        @Override
-        public void onMediaEngineLoadSuccess() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "MediaEngineLoaded");
-                    sendEvent(getReactApplicationContext(), AGMediaEngineLoaded, map);
-                }
-            });
-        }
-
-        @Override
-        public void onMediaEngineStartCallSuccess() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "MediaEngineStartCall");
-                    sendEvent(getReactApplicationContext(), AGMediaEngineStartCall, map);
-                }
-            });
-        }
-
-        @Override
-        public void onLastmileProbeResult(LastmileProbeResult result) {
-            super.onLastmileProbeResult(result);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "LastmileProbeTestResult");
-                    sendEvent(getReactApplicationContext(), AGLastmileProbeResult, map);
-                }
-            });
-        }
-
-        @Override
-        public void onLocalVideoStateChanged(final int localVideoState, final int error) {
-            super.onLocalVideoStateChanged(localVideoState, error);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putString("message", "LocalVideoChanged");
-                    map.putInt("state", localVideoState);
-                    sendEvent(getReactApplicationContext(), AGLocalVideoChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onChannelMediaRelayEvent(final int code) {
-            super.onChannelMediaRelayEvent(code);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("errorCode", code);
-                    sendEvent(getReactApplicationContext(), AGReceivedChannelMediaRelay, map);
-                }
-            });
-        }
-
-        @Override
-        public void onChannelMediaRelayStateChanged(final int state, final int code) {
-            super.onChannelMediaRelayStateChanged(state, code);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("state", state);
-                    map.putInt("errorCode", code);
-                    sendEvent(getReactApplicationContext(), AGMediaRelayStateChanged, map);
-                }
-            });
-        }
-
-        @Override
-        public void onLocalAudioStats(final LocalAudioStats rtcStats) {
-            super.onLocalAudioStats(rtcStats);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    WritableMap map = Arguments.createMap();
-                    map.putInt("numChannels", rtcStats.numChannels);
-                    map.putInt("sentSampleRate", rtcStats.sentSampleRate);
-                    map.putInt("sentBitrate", rtcStats.sentBitrate);
-                    sendEvent(getReactApplicationContext(), AGLocalAudioStats, map);
-                }
-            });
-        }
     };
 
     public void setAppType(RtcEngineEx engineEx) {
@@ -2189,58 +1620,8 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         agoraManager().addMetadataListener(metadataListener);
     }
 
-    // -- original - Metadata support that lacks queueing capabilities
-
-//    @ReactMethod
-//    public void sendMediaData(String data, final Promise promise) {
-//        if (null == mediaObserver) {
-//            promise.reject("-1", "-1");
-//        } else {
-//            mediaObserver.setMetadata(data.getBytes(Charset.forName("UTF-8")));
-//            promise.resolve(null);
-//        }
-//    }
-//
-//    @ReactMethod
-//    public void registerMediaMetadataObserver(final Promise promise) {
-//        mediaObserver = new MediaObserver(getReactApplicationContext());
-//        Integer res = rtcEngine()
-//                .registerMediaMetadataObserver(mediaObserver, IMetadataObserver.VIDEO_METADATA);
-//        if (res == 0) {
-//            promise.resolve(null);
-//        } else {
-//            promise.reject("-1", res.toString());
-//        }
-//    }
-
-    //endregion
-
     private static boolean recording = false;
 
-//    // TODO: need implementation
-//    @ReactMethod
-//    public void startAVRecording(final ReadableMap option, final Promise promise) {
-//        String path = option.getString("path");
-//        Integer uid = option.getInt("uid");
-//        String format = option.getString("format");
-//        if (true == recording) {
-//            promise.reject("-1", "recording already started");
-//        }
-//        SurfaceView view = agoraManager().getSurfaceView(uid);
-//        if (null == view) {
-//            promise.reject("-1", "recording already started");
-//        }
-//    }
-//
-//    // TODO: need implementation
-//    @ReactMethod
-//    public void stopAVRecording(final Promise promise) {
-//        if (false == recording) {
-//            promise.reject("-1", "recording didn't start");
-//        } else {
-//            promise.resolve(null);
-//        }
-//    }
 
     public LiveInjectStreamConfig.AudioSampleRateType getAudioSampleRateEnum (int val) {
         LiveInjectStreamConfig.AudioSampleRateType type = LiveInjectStreamConfig.AudioSampleRateType.TYPE_32000;
