@@ -458,6 +458,11 @@ public final class NullRtcEngineEx extends RtcEngineEx {
     }
 
     @Override
+    public int setAudioMixingPitch(final int pitch) {
+        return 0;
+    }
+
+    @Override
     public IAudioEffectManager getAudioEffectManager() {
         return null;
     }
@@ -729,6 +734,11 @@ public final class NullRtcEngineEx extends RtcEngineEx {
 
     @Override
     public int setCameraExposurePosition(final float positionXinView, final float positionYinView) {
+        return 0;
+    }
+
+    @Override
+    public int enableFaceDetection(final boolean enable) {
         return 0;
     }
 
