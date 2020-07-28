@@ -391,6 +391,10 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.setAudioMixingPosition(pos);
     }
 
+    public int setAudioMixingPitch(final int pitch) {
+        return mRtcEngine.setAudioMixingPitch(pitch);
+    }
+
     public IAudioEffectManager getAudioEffectManager() {
         return mRtcEngine.getAudioEffectManager();
     }
@@ -601,6 +605,10 @@ public class RtcEngineWrapper extends RtcEngineEx {
 
     public int setCameraExposurePosition(float positionXinView, float positionYinView) {
         return mRtcEngine.setCameraExposurePosition(positionXinView, positionYinView);
+    }
+
+    public int enableFaceDetection(final boolean enable) {
+        return mRtcEngine.enableFaceDetection(enable);
     }
 
     public int setCameraTorchOn(boolean isOn) {

@@ -204,6 +204,10 @@ public class CompositeRtcEngineEventHandler extends IRtcEngineEventHandlerEx {
         for (IRtcEngineEventHandler h : handlers) h.onCameraExposureAreaChanged(rect);
     }
 
+    public void onFacePositionChanged(final int imageWidth, final int imageHeight, final AgoraFacePositionInfo[] faces) {
+        for (IRtcEngineEventHandler h : handlers) h.onFacePositionChanged(imageWidth, imageHeight, faces);
+    }
+
     public void onAudioQuality(int uid, int quality, short delay, short lost) {
         for (IRtcEngineEventHandler h : handlers) h.onAudioQuality(uid, quality, delay, lost);
     }
