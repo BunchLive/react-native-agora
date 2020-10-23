@@ -9,6 +9,7 @@ import io.agora.rtc.IRtcEngineEventHandler;
 import io.agora.rtc.RtcEngine;
 import io.agora.rtc.RtcChannel;
 import io.agora.rtc.RtcEngineEx;
+import io.agora.rtc.internal.EncryptionConfig;
 import io.agora.rtc.internal.LastmileProbeConfig;
 import io.agora.rtc.live.LiveInjectStreamConfig;
 import io.agora.rtc.live.LiveTranscoding;
@@ -117,6 +118,11 @@ public class RtcEngineWrapper extends RtcEngineEx {
 
     public int setClientRole(int role) {
         return mRtcEngine.setClientRole(role);
+    }
+
+    @Override
+    public int sendCustomReportMessage(String id, String category, String event, String label, int value) {
+        return 0;
     }
 
     public int joinChannel(String token, String channelName, String optionalInfo, int optionalUid) {
@@ -529,6 +535,11 @@ public class RtcEngineWrapper extends RtcEngineEx {
 
     public int setEncryptionMode(String encryptionMode) {
         return mRtcEngine.setEncryptionMode(encryptionMode);
+    }
+
+    @Override
+    public int enableEncryption(boolean enabled, EncryptionConfig config) {
+        return 0;
     }
 
     public int addInjectStreamUrl(String url, LiveInjectStreamConfig config) {
