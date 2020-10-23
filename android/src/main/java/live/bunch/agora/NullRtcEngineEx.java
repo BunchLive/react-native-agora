@@ -7,6 +7,7 @@ import io.agora.rtc.IAudioFrameObserver;
 import io.agora.rtc.IMetadataObserver;
 import io.agora.rtc.RtcChannel;
 import io.agora.rtc.RtcEngineEx;
+import io.agora.rtc.internal.EncryptionConfig;
 import io.agora.rtc.internal.LastmileProbeConfig;
 import io.agora.rtc.live.LiveInjectStreamConfig;
 import io.agora.rtc.live.LiveTranscoding;
@@ -101,6 +102,9 @@ public final class NullRtcEngineEx extends RtcEngineEx {
     public int setClientRole(final int role) {
         return 0;
     }
+
+    @Override
+    public int sendCustomReportMessage(String id, String category, String event, String label, int value) { return 0; }
 
     @Override
     public int joinChannel(final String token, final String channelName, final String optionalInfo, final int optionalUid) {
@@ -641,6 +645,9 @@ public final class NullRtcEngineEx extends RtcEngineEx {
     public int setEncryptionMode(final String encryptionMode) {
         return 0;
     }
+
+    @Override
+    public int enableEncryption(final boolean enabled, final EncryptionConfig config) { return 0; }
 
     @Override
     public int addInjectStreamUrl(final String url, final LiveInjectStreamConfig config) {
