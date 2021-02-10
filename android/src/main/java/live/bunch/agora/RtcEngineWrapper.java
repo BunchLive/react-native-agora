@@ -15,6 +15,9 @@ import io.agora.rtc.live.LiveInjectStreamConfig;
 import io.agora.rtc.live.LiveTranscoding;
 import io.agora.rtc.mediaio.IVideoSink;
 import io.agora.rtc.mediaio.IVideoSource;
+import io.agora.rtc.models.ChannelMediaOptions;
+import io.agora.rtc.models.ClientRoleOptions;
+import io.agora.rtc.models.DataStreamConfig;
 import io.agora.rtc.models.UserInfo;
 import io.agora.rtc.video.AgoraImage;
 import io.agora.rtc.video.AgoraVideoFrame;
@@ -43,6 +46,7 @@ public class RtcEngineWrapper extends RtcEngineEx {
         if (mRtcEngine instanceof RtcEngineEx) return ((RtcEngineEx)mRtcEngine).setProfile(profile, merge);
         return -1;
     }
+
 
     public int setAppType(int appType) {
         if (mRtcEngine instanceof RtcEngineEx) return ((RtcEngineEx)mRtcEngine).setAppType(appType);
@@ -120,7 +124,12 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.setClientRole(role);
     }
 
-    @Override
+	@Override
+	public int setClientRole(int role, ClientRoleOptions options) {
+		return 0;
+	}
+
+	@Override
     public int sendCustomReportMessage(String id, String category, String event, String label, int value) {
         return 0;
     }
@@ -129,11 +138,21 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.joinChannel(token, channelName, optionalInfo, optionalUid);
     }
 
-    public int switchChannel(String token, String channelName) {
+	@Override
+	public int joinChannel(String token, String channelName, String optionalInfo, int optionalUid, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	public int switchChannel(String token, String channelName) {
         return mRtcEngine.switchChannel(token, channelName);
     }
 
-    public int leaveChannel() {
+	@Override
+	public int switchChannel(String token, String channelName, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	public int leaveChannel() {
         return mRtcEngine.leaveChannel();
     }
 
@@ -149,7 +168,17 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.joinChannelWithUserAccount(token, channelName, userAccount);
     }
 
-    public int getUserInfoByUserAccount(String userAccount, UserInfo userInfo) {
+	@Override
+	public int joinChannelWithUserAccount(String token, String channelName, String userAccount, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	@Override
+	public int setCloudProxy(int proxyType) {
+		return 0;
+	}
+
+	public int getUserInfoByUserAccount(String userAccount, UserInfo userInfo) {
         return mRtcEngine.getUserInfoByUserAccount(userAccount, userInfo);
     }
 
@@ -165,7 +194,12 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.getConnectionState();
     }
 
-    public int enableAudio() {
+	@Override
+	public int enableRemoteSuperResolution(int uid, boolean enable) {
+		return 0;
+	}
+
+	public int enableAudio() {
         return mRtcEngine.enableAudio();
     }
 
@@ -341,7 +375,32 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.setLocalVoiceReverbPreset(preset);
     }
 
-    public int enableSoundPositionIndication(boolean enabled) {
+	@Override
+	public int setAudioEffectPreset(int preset) {
+		return 0;
+	}
+
+	@Override
+	public int setVoiceBeautifierPreset(int preset) {
+		return 0;
+	}
+
+	@Override
+	public int setAudioEffectParameters(int preset, int param1, int param2) {
+		return 0;
+	}
+
+	@Override
+	public int setVoiceBeautifierParameters(int preset, int param1, int param2) {
+		return 0;
+	}
+
+	@Override
+	public int enableDeepLearningDenoise(boolean enabled) {
+		return 0;
+	}
+
+	public int enableSoundPositionIndication(boolean enabled) {
         return mRtcEngine.enableSoundPositionIndication(enabled);
     }
 
@@ -566,7 +625,12 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.createDataStream(reliable, ordered);
     }
 
-    public int sendStreamMessage(int streamId, byte[] message) {
+	@Override
+	public int createDataStream(DataStreamConfig config) {
+		return 0;
+	}
+
+	public int sendStreamMessage(int streamId, byte[] message) {
         return mRtcEngine.sendStreamMessage(streamId, message);
     }
 
@@ -654,7 +718,12 @@ public class RtcEngineWrapper extends RtcEngineEx {
         return mRtcEngine.setLogFileSize(fileSizeInKBytes);
     }
 
-    public long getNativeHandle() {
+	@Override
+	public String uploadLogFile() {
+		return null;
+	}
+
+	public long getNativeHandle() {
         return mRtcEngine.getNativeHandle();
     }
 

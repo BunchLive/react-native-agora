@@ -13,6 +13,9 @@ import io.agora.rtc.live.LiveInjectStreamConfig;
 import io.agora.rtc.live.LiveTranscoding;
 import io.agora.rtc.mediaio.IVideoSink;
 import io.agora.rtc.mediaio.IVideoSource;
+import io.agora.rtc.models.ChannelMediaOptions;
+import io.agora.rtc.models.ClientRoleOptions;
+import io.agora.rtc.models.DataStreamConfig;
 import io.agora.rtc.models.UserInfo;
 import io.agora.rtc.video.AgoraImage;
 import io.agora.rtc.video.AgoraVideoFrame;
@@ -103,6 +106,11 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
+	@Override
+	public int setClientRole(final int role, ClientRoleOptions option) {
+		return 0;
+	}
+
     @Override
     public int sendCustomReportMessage(String id, String category, String event, String label, int value) { return 0; }
 
@@ -111,12 +119,22 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public int joinChannel(String token, String channelName, String optionalInfo, int optionalUid, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	@Override
     public int switchChannel(final String token, final String channelName) {
         return 0;
     }
 
-    @Override
+	@Override
+	public int switchChannel(String token, String channelName, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	@Override
     public int leaveChannel() {
         return 0;
     }
@@ -136,7 +154,17 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public int joinChannelWithUserAccount(String token, String channelName, String userAccount, ChannelMediaOptions options) {
+		return 0;
+	}
+
+	@Override
+	public int setCloudProxy(int proxyType) {
+		return 0;
+	}
+
+	@Override
     public int getUserInfoByUserAccount(final String userAccount, final UserInfo userInfo) {
         return 0;
     }
@@ -156,7 +184,12 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public int enableRemoteSuperResolution(int uid, boolean enable) {
+		return 0;
+	}
+
+	@Override
     public int enableAudio() {
         return 0;
     }
@@ -391,7 +424,32 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public int setAudioEffectPreset(int preset) {
+		return 0;
+	}
+
+	@Override
+	public int setVoiceBeautifierPreset(int preset) {
+		return 0;
+	}
+
+	@Override
+	public int setAudioEffectParameters(int preset, int param1, int param2) {
+		return 0;
+	}
+
+	@Override
+	public int setVoiceBeautifierParameters(int preset, int param1, int param2) {
+		return 0;
+	}
+
+	@Override
+	public int enableDeepLearningDenoise(boolean enabled) {
+		return 0;
+	}
+
+	@Override
     public int enableSoundPositionIndication(final boolean enabled) {
         return 0;
     }
@@ -679,7 +737,12 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public int createDataStream(DataStreamConfig config) {
+		return 0;
+	}
+
+	@Override
     public int sendStreamMessage(final int streamId, final byte[] message) {
         return 0;
     }
@@ -789,7 +852,12 @@ public final class NullRtcEngineEx extends RtcEngineEx {
         return 0;
     }
 
-    @Override
+	@Override
+	public String uploadLogFile() {
+		return null;
+	}
+
+	@Override
     public long getNativeHandle() {
         return 0;
     }
